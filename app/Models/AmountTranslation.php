@@ -9,6 +9,11 @@ class AmountTranslation extends Model
 {
     use HasFactory;
 
+    protected $guarded = [
+    ];
+
+    public $timestamps = false;
+
     public function amount() {
         return $this->belongsTo('App\Amount');
     }

@@ -9,6 +9,11 @@ class Language extends Model
 {
     use HasFactory;
 
+    protected $guarded = [
+    ];
+
+    public $timestamps = false;
+
     public function restaurant() {
         return $this->belongsToMany('App\Restaurant');
     }

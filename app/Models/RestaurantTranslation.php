@@ -9,6 +9,11 @@ class RestaurantTranslation extends Model
 {
     use HasFactory;
 
+    protected $guarded = [
+    ];
+
+    public $timestamps = false;
+
     public function restaurant() {
         return $this->belongsTo('App\Restaurant');
     }

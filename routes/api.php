@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileExportController;
+use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubcategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +23,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
+
+//Restaurant
+Route::get('/restaurant/{id}', [RestaurantController::class, 'show']);
+
+//Category
+Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);
+Route::get('/category/{id}', [CategoryController::class, 'destroy']);
+
+//Subcategory
+Route::post('/category/{id}/subcategory', [SubcategoryController::class, 'store']);
+Route::get('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 

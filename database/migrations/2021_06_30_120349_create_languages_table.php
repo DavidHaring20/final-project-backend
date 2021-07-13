@@ -16,10 +16,11 @@ class CreateLanguagesTable extends Migration
         Schema::create('languages', function (Blueprint $table) {
             $table->id();
 
-            $table->string('language_code');
+            $table->string('language_code')->unique();
+            $table->string('language_name');
 
-            $table->unsignedBigInteger('restaurant_id');
-            $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('CASCADE');
+            // $table->unsignedBigInteger('restaurant_id');
+            // $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('CASCADE');
         });
     }
 

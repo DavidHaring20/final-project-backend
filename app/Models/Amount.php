@@ -9,6 +9,11 @@ class Amount extends Model
 {
     use HasFactory;
 
+    protected $guarded = [
+    ];
+
+    public $timestamps = false;
+
     public function translations() {
         return $this->hasMany('App\Models\AmountTranslation');
     }

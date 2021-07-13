@@ -146,6 +146,13 @@ class FileExportController extends Controller
                 'categories' => $restaurant_col
             ];
 
-        return($json);
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'json' => $json,
+                ]
+            ]
+        );
     }
 }

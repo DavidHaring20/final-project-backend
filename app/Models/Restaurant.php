@@ -10,11 +10,12 @@ class Restaurant extends Model
     use HasFactory;
 
     protected $guarded = [
-
     ];
 
+    public $timestamps = false;
+
     public function languages() {
-        return $this->hasMany('App\Models\Language');
+        return $this->belongsToMany('App\Models\Language');
     }
 
     public function styles() {

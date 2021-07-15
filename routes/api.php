@@ -6,6 +6,7 @@ use App\Http\Controllers\FileExportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\ItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,6 @@ Route::get('/category/{id}', [CategoryController::class, 'destroy']);
 Route::post('/category/{id}/subcategory', [SubcategoryController::class, 'store']);
 Route::get('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 
+//Item
+Route::post('/subcategory/{id}/item', [ItemController::class, 'store']);
+Route::get('/item/{id}', [ItemController::class, 'destroy']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoriesTranslation;
 use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
@@ -28,6 +29,17 @@ class CategoryController extends Controller
         return response()->json([
             'message' => 'Category is created'
         ]);
+    }
+
+    public function update($id, Request $request) {
+        $category_translations = CategoriesTranslation::where('category_id', $id)->get();
+        $translations = collect(json_decode($request->translations));
+
+        foreach($category_translations as $category_translation) {
+            $category_translation->name = $translations[$category_translation->language_code];
+            $category_translation->save();
+        }
+        return($category_translations);
     }
 
     public function destroy($id) {

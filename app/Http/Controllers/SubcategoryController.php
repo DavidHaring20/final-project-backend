@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\SubcategoriesTranslation;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,17 @@ class SubcategoryController extends Controller
         return response()->json([
             'message' => 'Subcategory is created'
         ]);
+    }
+
+    public function update($id, Request $request) {
+        $subcategory_translations = SubcategoriesTranslation::where('subcategory_id', $id)->get();
+        $translations = collect(json_decode($request->translations));
+
+        foreach($subcategory_translations as $subcategory_translation) {
+            $subcategory_translation->name = $translations[$subcategory_translation->language_code];
+            $subcategory_translation->save();
+        }
+        return($subcategory_translations);
     }
 
     public function destroy($id) {

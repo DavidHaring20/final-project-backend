@@ -30,11 +30,12 @@ Route::get('/restaurant/{id}', [RestaurantController::class, 'show']);
 
 //Category
 Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);
-Route::post('category/update/{id}', [CategoryController::class, 'update']);
+Route::post('/category/update/{id}', [CategoryController::class, 'update']);
 Route::get('/category/{id}', [CategoryController::class, 'destroy']);
 
 //Subcategory
 Route::post('/category/{id}/subcategory', [SubcategoryController::class, 'store']);
+Route::post('/subcategory/update/{id}', [SubcategoryController::class, 'update']);
 Route::get('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 
 //Item

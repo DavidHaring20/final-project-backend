@@ -39,7 +39,10 @@ class CategoryController extends Controller
             $category_translation->name = $translations[$category_translation->language_code];
             $category_translation->save();
         }
-        return($category_translations);
+
+        return response()->json([
+            'message' => 'Category has been updated'
+        ]);
     }
 
     public function destroy($id) {

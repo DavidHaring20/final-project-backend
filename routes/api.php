@@ -40,4 +40,5 @@ Route::get('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 
 //Item
 Route::post('/subcategory/{id}/item', [ItemController::class, 'store']);
+Route::post('/item/update/{id}', [ItemController::class, 'update']);
 Route::get('/item/{id}', [ItemController::class, 'destroy']);

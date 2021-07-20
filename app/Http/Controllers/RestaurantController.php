@@ -5,7 +5,7 @@ use App\Models\Restaurant;
 
 class RestaurantController extends Controller
 {
-    public function show($id) {
+    public function index($id) {
 
         $restaurant = Restaurant::with(
             'translations',
@@ -26,6 +26,22 @@ class RestaurantController extends Controller
                 'data' =>
                 [
                     'restaurant' => $restaurant,
+                ]
+            ]
+        );
+    }
+
+    public function show() {
+        $restaurants = Restaurant::with(
+            'translations',
+            'languages',
+            )->get();
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'restaurants' => $restaurants,
                 ]
             ]
         );

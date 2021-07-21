@@ -26,9 +26,16 @@ class SubcategoryController extends Controller
             ]);
         }
 
-        return response()->json([
-            'message' => 'Subcategory is created'
-        ]);
+        $newSubcategory = Subcategory::with('translations')->find($newSubcategory->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'subcategory' => $newSubcategory,
+                ]
+            ]
+        );
     }
 
     public function update($id, Request $request) {

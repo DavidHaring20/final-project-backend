@@ -47,14 +47,14 @@ class RestaurantController extends Controller
         );
     }
 
-    // public function destroy($id) {
+    public function destroy($id) {
 
-    //     $restaurant = Restaurant::findOrFail($id);
+        $restaurant = Restaurant::findOrFail($id);
 
-    //     $restaurant->delete();
+        $restaurant->delete();
 
-    //     return response()->json([
-    //         'message' => 'Restaurant has been deleted'
-    //     ]);
-    // }
+        return response()->json([
+            'message' => 'Restaurant has been deleted'
+        ]);
+    }
 }

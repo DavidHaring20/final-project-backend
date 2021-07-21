@@ -27,7 +27,7 @@ Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileEx
 
 //Restaurant
 Route::get('/restaurants', [RestaurantController::class, 'show']);
-Route::get('/restaurant/{id}', [RestaurantController::class, 'index']);
+Route::get('/restaurant/show/{id}', [RestaurantController::class, 'index']);
 Route::get('/restaurant/{id}', [RestaurantController::class, 'destroy']);
 
 //Category

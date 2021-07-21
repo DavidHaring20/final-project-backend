@@ -46,7 +46,17 @@ class SubcategoryController extends Controller
             $subcategory_translation->name = $translations[$subcategory_translation->language_code];
             $subcategory_translation->save();
         }
-        return($subcategory_translations);
+
+        $updatedSubcategory = Subcategory::with('translations', 'items', 'items.translations', 'items.amounts')->find($subcategory_translations[0]->subcategory_id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'subcategory' => $updatedSubcategory,
+                ]
+            ]
+        );
     }
 
     public function destroy($id) {

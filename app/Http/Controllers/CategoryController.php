@@ -26,9 +26,16 @@ class CategoryController extends Controller
             ]);
         }
 
-        return response()->json([
-            'message' => 'Category is created'
-        ]);
+        $newCategory = Category::with('translations')->find($newCategory->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'category' => $newCategory,
+                ]
+            ]
+        );
     }
 
     public function update($id, Request $request) {

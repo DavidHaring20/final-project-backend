@@ -51,9 +51,18 @@ class ItemController extends Controller
             $index++;
         }
 
-        return response()->json([
-            'message' => 'Item has been created'
-        ]);
+        $categoryId = $subcategory->category_id;
+        $newItem = Item::with('translations', 'amounts', 'amounts.translations')->find($newItem->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'categoryId' => $categoryId,
+                    'item' => $newItem,
+                ]
+            ]
+        );
     }
 
     public function update($id, Request $request) {
@@ -99,7 +108,6 @@ class ItemController extends Controller
                 DB::rollBack();
                 report($e);
             }
-            //$amount->save();
             $i++;
         }
     }

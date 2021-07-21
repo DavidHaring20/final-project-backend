@@ -47,9 +47,24 @@ class CategoryController extends Controller
             $category_translation->save();
         }
 
-        return response()->json([
-            'message' => 'Category has been updated'
-        ]);
+        $updatedCategory = Category::with(
+            'translations',
+            'subcategories',
+            'subcategories.translations',
+            'subcategories.items',
+            'subcategories.items.translations',
+            'subcategories.items.amounts',
+            'subcategories.items.amounts.translations'
+            )->find($category_translations[0]->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'category' => $updatedCategory,
+                ]
+            ]
+        );
     }
 
     public function destroy($id) {

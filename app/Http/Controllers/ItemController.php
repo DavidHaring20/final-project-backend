@@ -11,6 +11,7 @@ use Throwable;
 class ItemController extends Controller
 {
     public function store($id, Request $request) {
+
         $subcategory = Subcategory::findOrFail($id);
 
         $newItem = $subcategory->items()->create([
@@ -20,8 +21,7 @@ class ItemController extends Controller
 
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
-        $prices = collect(json_decode($request->prices));
-        $amount_descriptions = collect($request->amount_descriptions);
+        $amounts = collect(json_decode($request->amounts));
 
         foreach ($titles as $language_code => $title) {
             $newItem->translations()->create([
@@ -32,41 +32,27 @@ class ItemController extends Controller
             ]);
         }
 
-        $index = 1;
+        //Add amounts
 
-        foreach($amount_descriptions as $amount) {
+        foreach($amounts as $amount) {
             $newAmount = $newItem->amounts()->create([
                 'position' => 1,
-                'price' => $prices[$index]
+                'price' => $amount->price
             ]);
 
-            foreach ($amount as $language_code => $value) {
+            foreach($amount->translations as $languageCode => $description) {
                 $newAmount->translations()->create([
-                    'language_code' => $language_code,
+                    'language_code' => $languageCode,
                     'is_default' => false,
-                    'description' => isset($value) ? $value : null
+                    'description' => $description
                 ]);
             }
-
-            $index++;
         }
 
-        $categoryId = $subcategory->category_id;
-        $newItem = Item::with('translations', 'amounts', 'amounts.translations')->find($newItem->id);
-
-        return response()->json(
-            [
-                'data' =>
-                [
-                    'categoryId' => $categoryId,
-                    'item' => $newItem,
-                ]
-            ]
-        );
+        return($amounts);
     }
 
     public function update($id, Request $request) {
-
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
         $prices = collect(json_decode($request->prices));
@@ -76,7 +62,9 @@ class ItemController extends Controller
         $translations = $item->translations()->get();
         $amounts = $item->amounts()->get();
 
+
         foreach($translations as $translation) {
+
             $translation->title = $titles[$translation->language_code];
             $translation->description = $descriptions[$translation->language_code];
             $translation->save();
@@ -84,6 +72,8 @@ class ItemController extends Controller
 
         $i = 1;
         foreach($amounts as $amount) {
+            return($amount);
+            //ovo je ako amount vec postoji:
             try {
                 DB::beginTransaction();
                 $amount->update(['price' => $prices[$i]]);

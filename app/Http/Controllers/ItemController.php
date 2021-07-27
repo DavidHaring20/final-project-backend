@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class ItemController extends Controller
 {
@@ -22,6 +20,8 @@ class ItemController extends Controller
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
         $amounts = collect(json_decode($request->amounts));
+
+        return($amounts);
 
         foreach ($titles as $language_code => $title) {
             $newItem->translations()->create([
@@ -49,20 +49,30 @@ class ItemController extends Controller
             }
         }
 
-        return($amounts);
+        $categoryId = $subcategory->category_id;
+        $newItem = Item::with('translations', 'amounts', 'amounts.translations')->find($newItem->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'categoryId' => $categoryId,
+                    'item' => $newItem,
+                ]
+            ]
+        );
     }
 
     public function update($id, Request $request) {
+
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
-        $prices = collect(json_decode($request->prices));
-        $amount_descriptions = collect($request->amount_descriptions);
+        $amounts = collect($request->amounts);
 
         $item = Item::findOrFail($id);
         $translations = $item->translations()->get();
-        $amounts = $item->amounts()->get();
 
-
+        //Update translations and descriptions
         foreach($translations as $translation) {
 
             $translation->title = $titles[$translation->language_code];
@@ -70,35 +80,19 @@ class ItemController extends Controller
             $translation->save();
         }
 
-        $i = 1;
+        //Update amounts
         foreach($amounts as $amount) {
-            return($amount);
-            //ovo je ako amount vec postoji:
-            try {
-                DB::beginTransaction();
-                $amount->update(['price' => $prices[$i]]);
+            $updatedAmount = $item->amounts()->updateOrCreate(
+                ['id' => $amount['id']],
+                ['price' => $amount['price']]
+            );
 
-                $translations = $amount->translations();
-
-                foreach($amount_descriptions as $amount) {
-                    foreach($amount as $language_code => $description) {
-                        $translations->updateOrCreate(
-                            ['language_code' => $language_code],
-                            [
-                                'language_code' => $language_code,
-                                'is_default' => false,
-                                'description' => $description
-                            ]
-                        );
-                    }
-                }
-
-                DB::commit();
-            } catch (Throwable $e) {
-                DB::rollBack();
-                report($e);
+            foreach($amount['translations'] as $translationKey => $translationVal) {
+                $updatedAmount->translations()->updateOrCreate(
+                    ['language_code' => $translationKey],
+                    ['description' => $translationVal]
+                );
             }
-            $i++;
         }
     }
 

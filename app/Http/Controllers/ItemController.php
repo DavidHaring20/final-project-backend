@@ -21,8 +21,6 @@ class ItemController extends Controller
         $descriptions = collect(json_decode($request->descriptions));
         $amounts = collect(json_decode($request->amounts));
 
-        return($amounts);
-
         foreach ($titles as $language_code => $title) {
             $newItem->translations()->create([
                 'language_code' => $language_code,
@@ -57,7 +55,7 @@ class ItemController extends Controller
                 'data' =>
                 [
                     'categoryId' => $categoryId,
-                    'item' => $newItem,
+                    'newItem' => $newItem,
                 ]
             ]
         );
@@ -94,6 +92,20 @@ class ItemController extends Controller
                 );
             }
         }
+
+        $subcategory = Subcategory::findOrFail($item->subcategory_id);
+        $categoryId = $subcategory->category_id;
+        $updatedItem = Item::with('translations', 'amounts', 'amounts.translations')->find($item->id);
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'categoryId' => $categoryId,
+                    'updatedItem' => $updatedItem,
+                ]
+            ]
+        );
     }
 
     public function destroy($id) {

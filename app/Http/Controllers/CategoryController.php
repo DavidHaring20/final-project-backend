@@ -55,7 +55,7 @@ class CategoryController extends Controller
             'subcategories.items.translations',
             'subcategories.items.amounts',
             'subcategories.items.amounts.translations'
-            )->find($category_translations[0]->id);
+            )->find($category_translations[0]->category_id);
 
         return response()->json(
             [

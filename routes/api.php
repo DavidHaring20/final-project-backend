@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AmountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileExportController;
@@ -33,14 +34,18 @@ Route::get('/restaurant/{id}', [RestaurantController::class, 'destroy']);
 //Category
 Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);
 Route::post('/category/update/{id}', [CategoryController::class, 'update']);
-Route::get('/category/{id}', [CategoryController::class, 'destroy']);
+Route::get('/delete/category/{id}', [CategoryController::class, 'destroy']);
 
 //Subcategory
 Route::post('/category/{id}/subcategory', [SubcategoryController::class, 'store']);
 Route::post('/subcategory/update/{id}', [SubcategoryController::class, 'update']);
-Route::get('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
+Route::get('/delete/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 
 //Item
 Route::post('/subcategory/{id}/item', [ItemController::class, 'store']);
 Route::post('/item/update/{id}', [ItemController::class, 'update']);
-Route::get('/item/{id}', [ItemController::class, 'destroy']);
+Route::get('/delete/item/{id}', [ItemController::class, 'destroy']);
+
+//Amount
+Route::post('/item/{id}/amount', [AmountController::class, 'store']);
+Route::get('/delete/amount/{id}', [AmountController::class, 'destroy']);

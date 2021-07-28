@@ -13,70 +13,92 @@ class SubcategoryController extends Controller
 {
     public function store($id, Request $request) {
 
-        $category = Category::findOrFail($id);
-        $translations = collect(json_decode($request->translations));
+        $validatedData = $request->validate([
+            'translations' => ['required']
+        ]);
 
-        try {
-            DB::beginTransaction();
+        if($validatedData) {
+            $category = Category::findOrFail($id);
+            $translations = collect(json_decode($request->translations));
 
-            $newSubcategory = $category->subcategories()->create([
-                'position' => 1,
-            ]);
+            try {
+                DB::beginTransaction();
 
-            foreach ($translations as $language_code => $value) {
-                $newSubcategory->translations()->create([
-                    'language_code' => $language_code,
-                    'is_default' => false,
-                    'name' => $value,
+                $newSubcategory = $category->subcategories()->create([
+                    'position' => 1,
                 ]);
+
+                foreach ($translations as $language_code => $value) {
+                    $newSubcategory->translations()->create([
+                        'language_code' => $language_code,
+                        'is_default' => false,
+                        'name' => $value,
+                    ]);
+                }
+
+                DB::commit();
+            } catch(Throwable $e) {
+                DB::rollBack();
+                report($e);
             }
 
-            DB::commit();
-        } catch(Throwable $e) {
-            DB::rollBack();
-            report($e);
-        }
+            $newSubcategory = Subcategory::with('translations')->find($newSubcategory->id);
 
-        $newSubcategory = Subcategory::with('translations')->find($newSubcategory->id);
-
-        return response()->json(
-            [
-                'data' =>
+            return response()->json(
                 [
-                    'subcategory' => $newSubcategory,
+                    'data' =>
+                    [
+                        'subcategory' => $newSubcategory,
+                    ]
                 ]
-            ]
-        );
+            );
+        }
+        else {
+            return response()->json(
+                'The translations field has to be provided.'
+            );
+        }
     }
 
     public function update($id, Request $request) {
-        $subcategory_translations = SubcategoriesTranslation::where('subcategory_id', $id)->get();
-        $translations = collect(json_decode($request->translations));
+        $validatedData = $request->validate([
+            'translations' => ['required']
+        ]);
 
-        try {
-            DB::beginTransaction();
+        if($validatedData) {
+            $subcategory_translations = SubcategoriesTranslation::where('subcategory_id', $id)->get();
+            $translations = collect(json_decode($request->translations));
 
-            foreach($subcategory_translations as $subcategory_translation) {
-                $subcategory_translation->name = $translations[$subcategory_translation->language_code];
-                $subcategory_translation->save();
+            try {
+                DB::beginTransaction();
+
+                foreach($subcategory_translations as $subcategory_translation) {
+                    $subcategory_translation->name = $translations[$subcategory_translation->language_code];
+                    $subcategory_translation->save();
+                }
+
+                DB::commit();
+            } catch(Throwable $e) {
+                DB::rollBack();
+                report($e);
             }
 
-            DB::commit();
-        } catch(Throwable $e) {
-            DB::rollBack();
-            report($e);
-        }
+            $updatedSubcategory = Subcategory::with('translations', 'items', 'items.translations', 'items.amounts')->find($subcategory_translations[0]->subcategory_id);
 
-        $updatedSubcategory = Subcategory::with('translations', 'items', 'items.translations', 'items.amounts')->find($subcategory_translations[0]->subcategory_id);
-
-        return response()->json(
-            [
-                'data' =>
+            return response()->json(
                 [
-                    'subcategory' => $updatedSubcategory,
+                    'data' =>
+                    [
+                        'subcategory' => $updatedSubcategory,
+                    ]
                 ]
-            ]
-        );
+            );
+        }
+        else {
+            return response()->json(
+                'The translations field has to be provided.'
+            );
+        }
     }
 
     public function destroy($id) {

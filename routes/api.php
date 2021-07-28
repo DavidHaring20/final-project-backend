@@ -30,6 +30,7 @@ Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileEx
 Route::get('/restaurants', [RestaurantController::class, 'show']);
 Route::get('/restaurant/show/{id}', [RestaurantController::class, 'index']);
 Route::get('/restaurant/{id}', [RestaurantController::class, 'destroy']);
+Route::post('/restaurant/{id}/edit-footer', [RestaurantController::class, 'editFooter']);
 
 //Category
 Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Restaurant;
+use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
 {
@@ -56,5 +57,16 @@ class RestaurantController extends Controller
         return response()->json([
             'message' => 'Restaurant has been deleted'
         ]);
+    }
+
+    public function editFooter($id, Request $request) {
+
+        $restaurant = Restaurant::findOrFail($id);
+        $translations = collect(json_decode($request->translations));
+
+        foreach($restaurant->translations as $restaurantTranslation) {
+            $restaurantTranslation->footer = $translations[$restaurantTranslation->language_code];
+            $restaurantTranslation->save();
+        }
     }
 }

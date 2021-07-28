@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Restaurant;
+use App\Models\RestaurantTranslation;
 use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
@@ -68,5 +69,16 @@ class RestaurantController extends Controller
             $restaurantTranslation->footer = $translations[$restaurantTranslation->language_code];
             $restaurantTranslation->save();
         }
+
+        $restaurantTranslations = $restaurant->translations;
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'translations' => $restaurantTranslations,
+                ]
+            ]
+        );
     }
 }

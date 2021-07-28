@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Subcategory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Throwable;
 
 class ItemController extends Controller
 {
@@ -12,39 +14,48 @@ class ItemController extends Controller
 
         $subcategory = Subcategory::findOrFail($id);
 
-        $newItem = $subcategory->items()->create([
-            'position' => 1,
-            'image_url' => '' //?
-        ]);
-
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
         $amounts = collect(json_decode($request->amounts));
 
-        foreach ($titles as $language_code => $title) {
-            $newItem->translations()->create([
-                'language_code' => $language_code,
-                'is_default' => false,
-                'title' => $title,
-                'description' => isset($descriptions[$language_code]) ? $descriptions[$language_code] : null
-            ]);
-        }
+        try {
+            DB::beginTransaction();
 
-        //Add amounts
-
-        foreach($amounts as $amount) {
-            $newAmount = $newItem->amounts()->create([
+            $newItem = $subcategory->items()->create([
                 'position' => 1,
-                'price' => $amount->price
+                'image_url' => ''
             ]);
 
-            foreach($amount->translations as $languageCode => $description) {
-                $newAmount->translations()->create([
-                    'language_code' => $languageCode,
+            foreach ($titles as $language_code => $title) {
+                $newItem->translations()->create([
+                    'language_code' => $language_code,
                     'is_default' => false,
-                    'description' => $description
+                    'title' => $title,
+                    'description' => isset($descriptions[$language_code]) ? $descriptions[$language_code] : null
                 ]);
             }
+
+            //Add amounts
+
+            foreach($amounts as $amount) {
+                $newAmount = $newItem->amounts()->create([
+                    'position' => 1,
+                    'price' => $amount->price
+                ]);
+
+                foreach($amount->translations as $languageCode => $description) {
+                    $newAmount->translations()->create([
+                        'language_code' => $languageCode,
+                        'is_default' => false,
+                        'description' => $description
+                    ]);
+                }
+            }
+
+            DB::commit();
+        } catch(Throwable $e) {
+            DB::rollBack();
+            report($e);
         }
 
         $categoryId = $subcategory->category_id;
@@ -70,27 +81,36 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $translations = $item->translations()->get();
 
-        //Update translations and descriptions
-        foreach($translations as $translation) {
+        try {
+            DB::beginTransaction();
 
-            $translation->title = $titles[$translation->language_code];
-            $translation->description = $descriptions[$translation->language_code];
-            $translation->save();
-        }
+            //Update translations and descriptions
+            foreach($translations as $translation) {
 
-        //Update amounts
-        foreach($amounts as $amount) {
-            $updatedAmount = $item->amounts()->updateOrCreate(
-                ['id' => $amount['id']],
-                ['price' => $amount['price']]
-            );
-
-            foreach($amount['translations'] as $translationKey => $translationVal) {
-                $updatedAmount->translations()->updateOrCreate(
-                    ['language_code' => $translationKey],
-                    ['description' => $translationVal]
-                );
+                $translation->title = $titles[$translation->language_code];
+                $translation->description = $descriptions[$translation->language_code];
+                $translation->save();
             }
+
+            //Update amounts
+            foreach($amounts as $amount) {
+                $updatedAmount = $item->amounts()->updateOrCreate(
+                    ['id' => $amount['id']],
+                    ['price' => $amount['price']]
+                );
+
+                foreach($amount['translations'] as $translationKey => $translationVal) {
+                    $updatedAmount->translations()->updateOrCreate(
+                        ['language_code' => $translationKey],
+                        ['description' => $translationVal]
+                    );
+                }
+            }
+
+            DB::commit();
+        } catch(Throwable $e) {
+            DB::rollBack();
+            report($e);
         }
 
         $subcategory = Subcategory::findOrFail($item->subcategory_id);

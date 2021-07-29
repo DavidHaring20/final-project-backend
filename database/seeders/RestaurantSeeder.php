@@ -147,6 +147,11 @@ class RestaurantSeeder extends Seeder
                             'description' => ''
                         ]);
                     }
+
+                    $newItem->amounts()->create([
+                        'position' => 1,
+                        'price' => 18
+                    ]);
                 }
             }
         }

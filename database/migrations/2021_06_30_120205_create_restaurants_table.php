@@ -18,6 +18,7 @@ class CreateRestaurantsTable extends Migration
 
             $table->integer('position');
             $table->string('currency');
+            $table->string('slug');
         });
     }
 

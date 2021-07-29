@@ -16,15 +16,16 @@ class RestaurantSeeder extends Seeder
     {
         $restaurant = Restaurant::updateOrCreate([
             'position' => 1,
-            'currency' => 'kn'
+            'currency' => 'kn',
+            'slug' => 'test-restaurant'
             ]
         );
 
         $restaurant_names = [
-            'hr' => 'Grill Lovorka',
-            'en' => 'Grill Lovorka',
-            'it' => 'Grill Lovorka',
-            'de' => 'Grill Lovorka'
+            'hr' => 'Test Restaurant',
+            'en' => 'Test Restaurant en',
+            'it' => 'Test Restaurant it',
+            'de' => 'Test Restaurant de'
         ];
 
         $footers = [

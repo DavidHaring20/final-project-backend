@@ -42,7 +42,7 @@ class CategoryController extends Controller
                 report($e);
             }
 
-            $newCategory = Category::with('translations')->find($newCategory->id);
+            $newCategory = Category::with('translations', 'subcategories')->find($newCategory->id);
 
             return response()->json(
                 [

@@ -42,7 +42,7 @@ class SubcategoryController extends Controller
                 report($e);
             }
 
-            $newSubcategory = Subcategory::with('translations')->find($newSubcategory->id);
+            $newSubcategory = Subcategory::with('translations', 'items')->find($newSubcategory->id);
 
             return response()->json(
                 [

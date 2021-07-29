@@ -27,8 +27,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
 
 //Restaurant
-Route::get('/restaurants', [RestaurantController::class, 'show']);
-Route::get('/restaurant/show/{id}', [RestaurantController::class, 'index']);
+Route::get('/restaurants', [RestaurantController::class, 'index']);
+Route::get('/restaurant/show/{id}', [RestaurantController::class, 'show']);
+Route::get('/restaurant/{slug}', [RestaurantController::class, 'showBySlug']);
 Route::get('/restaurant/{id}', [RestaurantController::class, 'destroy']);
 Route::post('/restaurant/{id}/edit-footer', [RestaurantController::class, 'editFooter']);
 

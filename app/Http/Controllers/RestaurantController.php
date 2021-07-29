@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
 {
-    public function index($id) {
+    public function show($id) {
 
         $restaurant = Restaurant::with(
             'translations',
@@ -33,7 +33,32 @@ class RestaurantController extends Controller
         );
     }
 
-    public function show() {
+    public function showBySlug($slug) {
+        $restaurant = Restaurant::with(
+            'translations',
+            'languages',
+            'categories',
+            'styles',
+            'categories.translations',
+            'categories.subcategories',
+            'categories.subcategories.translations',
+            'categories.subcategories.items',
+            'categories.subcategories.items.translations',
+            'categories.subcategories.items.amounts',
+            'categories.subcategories.items.amounts.translations'
+            )->where('slug', $slug)->firstOrFail();
+
+        return response()->json(
+            [
+                'data' =>
+                [
+                    'restaurant' => $restaurant,
+                ]
+            ]
+        );
+    }
+
+    public function index() {
         $restaurants = Restaurant::with(
             'translations',
             'languages',

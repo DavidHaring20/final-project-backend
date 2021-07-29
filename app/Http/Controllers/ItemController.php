@@ -6,6 +6,8 @@ use App\Models\Item;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
 use Throwable;
 
 class ItemController extends Controller
@@ -86,6 +88,8 @@ class ItemController extends Controller
 
     public function update($id, Request $request) {
 
+        // return($request);
+
         $titles = collect(json_decode($request->titles));
         $descriptions = collect(json_decode($request->descriptions));
         $amounts = collect($request->amounts);
@@ -114,7 +118,11 @@ class ItemController extends Controller
                 foreach($amount['translations'] as $translationKey => $translationVal) {
                     $updatedAmount->translations()->updateOrCreate(
                         ['language_code' => $translationKey],
-                        ['description' => $translationVal]
+                        [
+                            'language_code' => $translationKey,
+                            'is_default' => false,
+                            'description' => $translationVal
+                        ]
                     );
                 }
             }
@@ -149,5 +157,28 @@ class ItemController extends Controller
         return response()->json([
             'message' => 'Item has been deleted'
         ]);
+    }
+
+    public function saveImage(Request $request) {
+
+        if ($request->hasFile('image')) {
+            if ($request->file('image')->isValid()) {
+                $validated = $request->validate([
+                    'name' => 'string|max:40',
+                    'image' => 'mimes:jpeg,png|max:1014',
+                ]);
+
+                $extension = $request->image->extension();
+            //     $request->image->storeAs('/public', $validated['name'].".".$extension);
+            //     $url = Storage::url($validated['name'].".".$extension);
+            //     $file = File::create([
+            //        'name' => $validated['name'],
+            //         'url' => $url,
+            //     ]);
+            //     Session::flash('success', "Success!");
+            //     return \Redirect::back();
+            }
+        }
+        abort(500, 'Could not upload image :(');
     }
 }

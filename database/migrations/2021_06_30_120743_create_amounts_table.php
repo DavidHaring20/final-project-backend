@@ -17,7 +17,7 @@ class CreateAmountsTable extends Migration
             $table->id();
 
             $table->integer('position');
-            $table->integer('price');
+            $table->integer('price')->nullable();
 
             $table->unsignedBigInteger('item_id');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('CASCADE');

@@ -18,9 +18,6 @@ class CreateLanguagesTable extends Migration
 
             $table->string('language_code')->unique();
             $table->string('language_name');
-
-            // $table->unsignedBigInteger('restaurant_id');
-            // $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('CASCADE');
         });
     }
 

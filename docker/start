@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -eu;
+set -o errexit;
+set -o pipefail;
+
+cat /code/.env.docker | envsubst > /code/.env;
+cat /.env.build | envsubst >> /code/.env;
+
+artisan migrate --force;
+
+php-fpm7 -D;
+
+su nobody -s /bin/sh -c 'caddy start --config /Caddyfile --adapter caddyfile';
+timeout 15 sh -c 'while ! nc -z localhost 80; do sleep 0.1; done;'
+
+touch /.started;
+
+echo -e '\e[1;36mContainer started successfully!\e[0m';
+
+while [ 1 == 1 ]; do sleep 3600; done;

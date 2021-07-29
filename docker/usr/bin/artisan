@@ -1,0 +1,27 @@
+#! /bin/sh
+
+set -eu;
+set -o errexit;
+set -o pipefail;
+
+function shQuote () {
+  if [[ ! -z ${1+x} ]]; then
+    echo -n "$1" | shQuote;
+  else
+    sed -e "s/'/'\\\\''/g; 1s/^/'/; \$s/\$/'/";
+  fi;
+};
+
+cmd='/code/artisan';
+
+cmd="$cmd $({ for arg in "$@"; do echo -n " $(shQuote "$arg")"; done; })";
+
+if [[ "$(id -u -n)" != "nobody" ]]; then
+  cmd="su nobody -s /bin/sh -c $(echo -n "$(shQuote "$cmd")")";
+fi;
+
+if [[ -p /dev/stdin ]]; then
+  cmd="tee | $cmd";
+fi;
+
+eval $cmd;

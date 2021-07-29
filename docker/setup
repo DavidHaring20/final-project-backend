@@ -1,0 +1,54 @@
+#!/bin/sh
+
+set -eu;
+set -o errexit;
+set -o pipefail;
+
+echo -e "Building \e[32m$BUILD\e[39m build.";
+echo "BUILD=$BUILD" >> /.env.build;
+
+if [[ "$BUILD" == "release" ]]; then
+  echo 'APP_ENV=production' >> /.env.build;
+  echo 'APP_DEBUG=false' >> /.env.build;
+fi;
+
+cp /code/.env.docker /code/.env;
+
+apk add --no-cache sudo gettext;
+apk add --no-cache git;
+apk add --no-cache libressl;
+apk add --no-cache php7 php7-fpm;
+apk add --no-cache caddy;
+apk add --no-cache php7-opcache php7-curl;
+apk add --no-cache php7-ctype php7-tokenizer php7-json php7-dom php7-xml php7-session php7-fileinfo;
+apk add --no-cache php7-calendar;
+apk add --no-cache php7-phpdbg php7-simplexml php7-xmlwriter;
+apk add --no-cache php7-pdo php7-pdo_pgsql;
+apk add --no-cache php7-openssl;
+apk add --no-cache php7-gd php7-exif php7-xmlreader php7-zip;
+apk add --no-cache composer;
+
+composerAgruments='';
+
+if [[ "$BUILD" == "release" ]]; then
+  composerAgruments='--optimize-autoloader --no-dev';
+fi;
+
+composer install --prefer-dist --no-suggest --apcu-autoloader $composerAgruments \
+  --no-interaction --working-dir=/code;
+
+chmod +x /start;
+chmod +x /code/artisan;
+chmod +x /usr/bin/artisan;
+
+mkdir -p /code/storage/app/public;
+mkdir -p /code/storage/framework/cache/data;
+mkdir -p /code/storage/framework/sessions;
+mkdir -p /code/storage/framework/testing;
+mkdir -p /code/storage/framework/views;
+mkdir -p /code/storage/logs;
+
+chmod -R a+rw /code/bootstrap/cache;
+chmod -R a+rw /code/storage;
+
+#artisan storage:link;

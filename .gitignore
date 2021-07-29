@@ -1,3 +1,7 @@
+
+/*.sublime-workspace
+/.dock.yaml
+/build
 /node_modules
 /public/hot
 /public/storage

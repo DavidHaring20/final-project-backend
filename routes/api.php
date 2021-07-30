@@ -8,6 +8,7 @@ use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LanguageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
+
+//Languages
+Route::get('/languages', [LanguageController::class, 'index']);
+Route::post('/languages/new', [LanguageController::class, 'store']);
 
 //Restaurant
 Route::get('/restaurants', [RestaurantController::class, 'index']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CategoriesTranslation;
 use App\Models\Category;
 use App\Models\Restaurant;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -28,12 +29,17 @@ class CategoryController extends Controller
                     'position' => 1,
                 ]);
 
-                foreach ($translations as $language_code => $value) {
-                    $newCategory->translations()->create([
-                        'language_code' => $language_code,
-                        'is_default' => false,
-                        'name' => $value,
-                    ]);
+                foreach ($translations as $language_code => $name) {
+                    if($name) {
+                        $newCategory->translations()->create([
+                            'language_code' => $language_code,
+                            'is_default' => false,
+                            'name' => $name,
+                        ]);
+                    }
+                    else {
+                        throw new Exception('Name is empty');
+                    }
                 }
 
                 DB::commit();
@@ -73,8 +79,13 @@ class CategoryController extends Controller
                 DB::beginTransaction();
 
                 foreach($category_translations as $category_translation) {
-                    $category_translation->name = $translations[$category_translation->language_code];
-                    $category_translation->save();
+                    if($translations[$category_translation->language_code]) {
+                        $category_translation->name = $translations[$category_translation->language_code];
+                        $category_translation->save();
+                    }
+                    else {
+                        throw new Exception('Name is empty');
+                    }
                 }
 
                 DB::commit();

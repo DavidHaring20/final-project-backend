@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Subcategory;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Session;
+
 use Throwable;
 
 class ItemController extends Controller
@@ -35,12 +35,17 @@ class ItemController extends Controller
                 ]);
 
                 foreach ($titles as $language_code => $title) {
-                    $newItem->translations()->create([
-                        'language_code' => $language_code,
-                        'is_default' => false,
-                        'title' => $title,
-                        'description' => isset($descriptions[$language_code]) ? $descriptions[$language_code] : null
-                    ]);
+                    if($title) {
+                        $newItem->translations()->create([
+                            'language_code' => $language_code,
+                            'is_default' => false,
+                            'title' => $title,
+                            'description' => isset($descriptions[$language_code]) ? $descriptions[$language_code] : null
+                        ]);
+                    }
+                    else {
+                        throw new Exception('Title is empty');
+                    }
                 }
 
                 //Add amounts
@@ -102,10 +107,14 @@ class ItemController extends Controller
 
             //Update translations and descriptions
             foreach($translations as $translation) {
-
-                $translation->title = $titles[$translation->language_code];
-                $translation->description = $descriptions[$translation->language_code];
-                $translation->save();
+                if($titles[$translation->language_code]) {
+                    $translation->title = $titles[$translation->language_code];
+                    $translation->description = $descriptions[$translation->language_code];
+                    $translation->save();
+                }
+                else {
+                    throw new Exception('Title is empty');
+                }
             }
 
             //Update amounts

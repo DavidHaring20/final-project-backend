@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\SubcategoriesTranslation;
 use App\Models\Subcategory;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -28,12 +29,17 @@ class SubcategoryController extends Controller
                     'position' => 1,
                 ]);
 
-                foreach ($translations as $language_code => $value) {
-                    $newSubcategory->translations()->create([
-                        'language_code' => $language_code,
-                        'is_default' => false,
-                        'name' => $value,
-                    ]);
+                foreach ($translations as $language_code => $name) {
+                    if($name) {
+                        $newSubcategory->translations()->create([
+                            'language_code' => $language_code,
+                            'is_default' => false,
+                            'name' => $name,
+                        ]);
+                    }
+                    else {
+                        throw new Exception('Name is empty');
+                    }
                 }
 
                 DB::commit();
@@ -73,8 +79,13 @@ class SubcategoryController extends Controller
                 DB::beginTransaction();
 
                 foreach($subcategory_translations as $subcategory_translation) {
-                    $subcategory_translation->name = $translations[$subcategory_translation->language_code];
-                    $subcategory_translation->save();
+                    if($translations[$subcategory_translation->language_code]) {
+                        $subcategory_translation->name = $translations[$subcategory_translation->language_code];
+                        $subcategory_translation->save();
+                    }
+                    else {
+                        throw new Exception('Name is empty');
+                    }
                 }
 
                 DB::commit();

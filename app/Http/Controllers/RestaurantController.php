@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Language;
 use App\Models\Restaurant;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -96,38 +97,47 @@ class RestaurantController extends Controller
             $slug = $names['hr'];
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
 
-
             try {
                 DB::beginTransaction();
 
-                $newRestaurant = Restaurant::create(
-                    [
-                        'position' => 1,
-                        'currency' => $currency,
-                        'slug' => $slug
-                    ]
-                );
-
-                foreach($languages as $language) {
-                    $existingLanguage = Language::firstOrCreate(
-                        ['language_code' => $language->language_code],
-                        ['language_name' => $language->language_name]
-                    );
-
-                    $newRestaurant->languages()->attach($existingLanguage);
-                }
-
-                foreach($names as $languageCode => $name) {
-                    $newRestaurant->translations()->create(
+                if($currency) {
+                    $newRestaurant = Restaurant::create(
                         [
-                            'language_code' => $languageCode,
-                            'is_default' => false,
-                            'name' => $name,
-                            'footer' => $footers[$languageCode]
+                            'position' => 1,
+                            'currency' => $currency,
+                            'slug' => $slug
                         ]
                     );
+
+                    foreach($languages as $language) {
+                        $existingLanguage = Language::firstOrCreate(
+                            ['language_code' => $language->language_code],
+                            ['language_name' => $language->language_name]
+                        );
+
+                        $newRestaurant->languages()->attach($existingLanguage);
+                    }
+
+                    foreach($names as $languageCode => $name) {
+                        if($name) {
+                            $newRestaurant->translations()->create(
+                                [
+                                    'language_code' => $languageCode,
+                                    'is_default' => false,
+                                    'name' => $name,
+                                    'footer' => $footers[$languageCode]
+                                ]
+                            );
+                        }
+                        else {
+                            throw new Exception('Name is empty');
+                        }
+                    }
+                    DB::commit();
                 }
-                DB::commit();
+                else {
+                    throw new Exception('Currency is empty');
+                }
             } catch(Throwable $e) {
                 DB::rollBack();
                 report($e);

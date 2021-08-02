@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Restaurant;
+use stdClass;
 
 class FileExportController extends Controller
 {
@@ -23,13 +24,13 @@ class FileExportController extends Controller
             )->find($id);
 
 
-        $socials_array = [];
+        $socials_array = new stdClass();
 
         $restaurant->networks->each(function($social) use (&$socials_array) {
             $socials_array[$social->name] = $social->link;
         });
 
-        $style_array = [];
+        $style_array = new stdClass();
 
         $restaurant->styles->each(function($style) use (&$style_array) {
             $style_array['headerImageMaxHeight'] = $style->header_image_max_height;
@@ -146,13 +147,6 @@ class FileExportController extends Controller
                 'categories' => $restaurant_col
             ];
 
-        return response()->json(
-            [
-                'data' =>
-                [
-                    'json' => $json,
-                ]
-            ]
-        );
+        return $json;
     }
 }

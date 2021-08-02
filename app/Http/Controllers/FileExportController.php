@@ -24,33 +24,36 @@ class FileExportController extends Controller
             )->find($id);
 
 
-        $socials_array = new stdClass();
+        $socials_array = [];
 
         $restaurant->networks->each(function($social) use (&$socials_array) {
-            $socials_array[$social->name] = $social->link;
+            $social_name = $social->name;
+            $socials_array[$social_name] = $social->link;
         });
+
+        $socials_array = (object)$socials_array;
 
         $style_array = new stdClass();
 
         $restaurant->styles->each(function($style) use (&$style_array) {
-            $style_array['headerImageMaxHeight'] = $style->header_image_max_height;
-            $style_array['itemTitleFontFamily'] = $style->item_title_font_family;
-            $style_array['itemTitleDisplay'] = $style->item_title_display;
+            $style_array->headerImageMaxHeight = $style->header_image_max_height;
+            $style_array->itemTitleFontFamily = $style->item_title_font_family;
+            $style_array->itemTitleDisplay = $style->item_title_display;
 
-            $style_array['itemSubtitleColor'] = $style->item_subtitle_color;
-            $style_array['itemDescriptionColor'] = $style->item_description_color;
+            $style_array->itemSubtitleColor = $style->item_subtitle_color;
+            $style_array->itemDescriptionColor = $style->item_description_color;
 
-            $style_array['itemTitleFontWeight'] = $style->item_title_font_weight;
-            $style_array['itemSubtitleFontWeight'] = $style->item_subtitle_font_weight;
-            $style_array['itemDescriptionFontWeight'] = $style->item_description_font_weight;
-            $style_array['itemPriceFontWeight'] = $style->item_price_font_weight;
+            $style_array->itemTitleFontWeight = $style->item_title_font_weight;
+            $style_array->itemSubtitleFontWeight = $style->item_subtitle_font_weight;
+            $style_array->itemDescriptionFontWeight = $style->item_description_font_weight;
+            $style_array->itemPriceFontWeight = $style->item_price_font_weight;
 
-            $style_array['itemTitleFontSize'] = $style->item_title_font_size;
-            $style_array['itemSubtitleFontSize'] = $style->item_subtitle_font_size;
-            $style_array['itemDescriptionFontSize'] = $style->item_description_font_size;
-            $style_array['itemPriceFontSize'] = $style->item_price_font_size;
+            $style_array->itemTitleFontSize = $style->item_title_font_size;
+            $style_array->itemSubtitleFontSize = $style->item_subtitle_font_size;
+            $style_array->itemDescriptionFontSize = $style->item_description_font_size;
+            $style_array->itemPriceFontSize = $style->item_price_font_size;
 
-            $style_array['itemPriceWidth'] = $style->item_price_width;
+            $style_array->itemPriceWidth = $style->item_price_width;
         });
 
         $languages_array = [];

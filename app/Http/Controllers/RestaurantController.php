@@ -89,7 +89,7 @@ class RestaurantController extends Controller
         ]);
 
         if($validatedData) {
-            $currency = collect(json_decode($request->currency));
+            $currency = $request->currency;
             $names = collect(json_decode($request->names));
             $footers = collect(json_decode($request->footers));
             $languages = collect(json_decode($request->languages));

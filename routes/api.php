@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileExportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
@@ -26,6 +27,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
+Route::get('/restaurant-json/{slug}', [FileExportController::class, 'ExportBySlug']);
+
+Route::post('/import-json', [FileImportController::class, 'importJSON']);
 
 //Languages
 Route::get('/languages', [LanguageController::class, 'index']);

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AmountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LogInController;
 use App\Http\Controllers\FileExportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\CategoryController;
@@ -25,6 +26,10 @@ use App\Http\Controllers\LanguageController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Login
+Route::post('/login/e-mail', [LogInController::class, 'requestVerificationCode']);
+Route::post('/login/e-mailAndPassword', [LogInController::class, 'authenticate']);
 
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
 Route::get('/restaurant-json/{slug}', [FileExportController::class, 'ExportBySlug']);

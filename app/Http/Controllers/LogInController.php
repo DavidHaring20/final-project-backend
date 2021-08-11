@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSubmitted;
-use DB;
 use Error;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LogInController extends Controller 
 {
     public function requestVerificationCode(Request $request) {
 
-        $email = $request->input('e-mail');
+        $email = $request->input('email');
 
         // VALIDATE AN E-MAIL
         $length = strlen($email);
@@ -82,10 +84,12 @@ class LogInController extends Controller
         try {
             Mail::to('95f1301a34-4c4098@inbox.mailtrap.io')->send(new EmailSubmitted($passcode));
 
-            DB::beginTransaction();
-            DB::insert('INSERT INTO users (email, passcode) VALUES (?, ?)', [$email, $passcode]);
-            
-            DB::commit();
+            $user = new User;
+
+            $user->email = $email;
+            $user->passcode = $passcode;
+
+            $user->save();
 
             return response()->json(
                 [
@@ -94,12 +98,12 @@ class LogInController extends Controller
                 ]
             );
         } catch (Error $error) {
-            DB::rollback();
 
             return response()->json(
                 [
                     'statusCode' => 500,
-                    'message' => 'Došlo je do pogreške. Molim pokušajte ponovo ili kontaktirajte administratora'
+                    'message' => 'Došlo je do pogreške. Molim pokušajte ponovo ili kontaktirajte administratora',
+                    'errorMessage' => "Error =>" + $error 
                 ]
             );
         }
@@ -107,39 +111,35 @@ class LogInController extends Controller
 
     public function authenticate(Request $request) {
         // GET EMAIL AND PASSCODE VALUES FROM THE REQUEST
-        $email = $request->input('e-mail');
+        $email = $request->input('email');
         $passcode = $request->input('passcode');
 
         // CHECK AGAINST THE DATABASE
         try {
-            DB::beginTransaction();
-            $user = DB::select('SELECT * FROM users WHERE email = :email AND passcode = :passcode',
-                ['email' => $email, 'passcode' => $passcode]);
-
-            if ($user == null) {
-                return response()->json(
-                    [
-                        'message' => 'There is no such user'
-                    ]
-                );
-            }
+            $user = User::where('email', '=' ,$email)
+                ->where('passcode', '=', $passcode)
+                ->firstOrFail();  
 
             return response()->json(
                 [
-                    'data' => [
-                        'message' => 'E-mail and passcode correct',
-                        'userFound' => true,
-                        'user' => $user
-                    ]
+                    'statusCode' => 200,
+                    'authenticated' => true,
+                    'message' => ''
                 ]
             );
-        } catch (Error $error) {
-            DB::rollBack();
-
+        } catch (ModelNotFoundException $error) {
             return response()->json(
                 [
-                    'message' => 'Error: ' + $error->getMessage()
-                ]
+                    'statusCode' => 400,
+                    'authenticated' => 'false',
+                    'message' => 'Krivo unesen e-mail ili passcode. Molim pokušajte ponovo.'
+                ], 
+            );
+        } catch (Exception $error) {
+            return response()->json(
+                [
+                    'message' => 'Error'
+                ], 500
             );
         }
 

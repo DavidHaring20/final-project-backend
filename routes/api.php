@@ -31,6 +31,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/login/e-mail', [LogInController::class, 'requestVerificationCode']);
 Route::post('/login/e-mailAndPassword', [LogInController::class, 'authenticate']);
 
+// Export and importing JSON file
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);
 Route::get('/restaurant-json/{slug}', [FileExportController::class, 'ExportBySlug']);
 

@@ -15,6 +15,7 @@ class ItemController extends Controller
     public function store($id, Request $request) {
         $validatedData = $request->validate([
             'titles' => ['required'],
+            'subtitles' => ['required'],
             'descriptions' => ['required'],
             'amounts' => ['required'],
         ]);
@@ -23,6 +24,7 @@ class ItemController extends Controller
             $subcategory = Subcategory::findOrFail($id);
 
             $titles = collect(json_decode($request->titles));
+            $subtitles = collect(json_decode($request->subtitles));        
             $descriptions = collect(json_decode($request->descriptions));
             $amounts = collect(json_decode($request->amounts));
 
@@ -40,6 +42,7 @@ class ItemController extends Controller
                             'language_code' => $language_code,
                             'is_default' => false,
                             'title' => $title,
+                            'subtitle' => isset($subtitles[$language_code]) ? $subtitles[$language_code] : null,
                             'description' => isset($descriptions[$language_code]) ? $descriptions[$language_code] : null
                         ]);
                     }

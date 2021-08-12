@@ -68,10 +68,12 @@ class FileExportController extends Controller
 
                 $items = $subcategory->items->transform(function($item) {
                     $item_name_array = [];
+                    $item_subtitle_array = [];
                     $item_description_array = [];
 
-                    $item->translations->each(function($item_translation) use (&$item_name_array, &$item_description_array) {
+                    $item->translations->each(function($item_translation) use (&$item_name_array, &$item_subtitle_array, &$item_description_array) {
                         $item_name_array[$item_translation->language_code] = $item_translation->title;
+                        $item_subtitle_array[$item_translation->language_code] = $item_translation->subtitle;
                         $item_description_array[$item_translation->language_code] = $item_translation->description;
                     });
 
@@ -92,22 +94,51 @@ class FileExportController extends Controller
                         }
                     });
 
-                    $flag = false;
+                    $flagForDescriptionNullCheck = false;
+                    $flagForSubtitleNullCheck = false;
 
-                    foreach($item_description_array as $description) {
-                        if(!(is_null($description))) {
-                            $flag = true;
+                    foreach ($item_subtitle_array as $key => $subtitle) {
+                        if ($subtitle != "") {
+                            $flagForSubtitleNullCheck = true;
                         }
                     }
 
-                    if($flag) {
-                        return[ 'title' => $item_name_array,
-                            'description' => $item_description_array,
-                            'amount' => $amount,
-                            'imageUrl' => $item->image_url,
-                        ];
+                    foreach ($item_description_array as $key => $description) {
+                        if ($description != "") {
+                            $flagForDescriptionNullCheck = true;
+                        }
                     }
 
+                    if ($flagForSubtitleNullCheck == false && $flagForDescriptionNullCheck == false) {          // $subtitle is NULL, $description is NULL => dont return them
+                        return[ 
+                            'title' => $item_name_array,
+                            'amount' => $amount,
+                            'imageUrl' => $item->image_url
+                        ];
+                    } else if ($flagForSubtitleNullCheck == true && $flagForDescriptionNullCheck == false) {    // $subtitle is NOT NULL, $description is NULL => return subtitles 
+                        return [
+                            'title' => $item_name_array,
+                            'subtitle' => $item_subtitle_array,
+                            'amount' => $amount,
+                            'imageUrl' => $item->image_url
+                        ];
+                    } else if ($flagForSubtitleNullCheck == false && $flagForDescriptionNullCheck == true) {    // $subtitle is NULL, $description is NOT NULL => return descriptions
+                        return [
+                            'title' => $item_name_array,
+                            'description' => $item_description_array,
+                            'amount' => $amount,
+                            'imageUrl' => $item->image_url
+                        ];
+                    } else {  
+                        return [                                                                                  // $subtitle is NOT NULL, $description is NOT NULL => return subtitles and descriptions
+                            'title' => $item_name_array,
+                            'subtitles' => $item_subtitle_array,
+                            'description' => $item_description_array,
+                            'amount' => $amount,
+                            'imageUrl' => $item->image_url
+                        ];
+                    }
+                    
                     return[ 'title' => $item_name_array,
                             'amount' => $amount,
                             'imageUrl' => $item->image_url,

@@ -99,6 +99,7 @@ class ItemController extends Controller
         // return($request);
 
         $titles = collect(json_decode($request->titles));
+        $subtitles = collect(json_decode($request->subtitles));
         $descriptions = collect(json_decode($request->descriptions));
         $amounts = collect($request->amounts);
 
@@ -112,6 +113,7 @@ class ItemController extends Controller
             foreach($translations as $translation) {
                 if($titles[$translation->language_code]) {
                     $translation->title = $titles[$translation->language_code];
+                    $translation->subtitle = $subtitles[$translation->language_code];
                     $translation->description = $descriptions[$translation->language_code];
                     $translation->save();
                 }

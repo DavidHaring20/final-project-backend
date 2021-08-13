@@ -11,6 +11,7 @@ use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\StyleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +68,8 @@ Route::get('/delete/item/{id}', [ItemController::class, 'destroy']);
 //Amount
 Route::post('/item/{id}/amount', [AmountController::class, 'store']);
 Route::get('/delete/amount/{id}', [AmountController::class, 'destroy']);
+
+// Style 
+Route::get('/styles', [StyleController::class, 'index']);
+Route::get('/styles/show/{id}', [StyleController::class, 'show']);
+Route::post('/styles/new', [StyleController::class, 'store']);

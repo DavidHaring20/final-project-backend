@@ -12,7 +12,10 @@ class Style extends Model
     protected $guarded = [
     ];
 
+    protected $table = 'styles';
+    protected $primaryKey = 'id';
     public $timestamps = false;
+    public $incrementing = 'true';
 
     public function restaurant() {
         return $this->belongsTo('App\Restaurant');

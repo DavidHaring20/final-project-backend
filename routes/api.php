@@ -71,5 +71,7 @@ Route::get('/delete/amount/{id}', [AmountController::class, 'destroy']);
 
 // Style 
 Route::get('/styles', [StyleController::class, 'index']);
-Route::get('/styles/show/{id}', [StyleController::class, 'show']);
-Route::post('/styles/new', [StyleController::class, 'store']);
+Route::get('/styles/{id}', [StyleController::class, 'show']);
+Route::post('/styles', [StyleController::class, 'store']);
+Route::delete('/styles/{id}', [StyleController::class, 'destroy']);
+Route::patch('/styles/{id}', [StyleController::class, 'update']);

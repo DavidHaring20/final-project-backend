@@ -118,6 +118,7 @@ class StyleController extends Controller
         );
     }
     
+    // DELETE STYLE
     public function destroy($id) {
         try {
             // CHECK IF THERE IS STYLE WITH THAT ID
@@ -142,6 +143,7 @@ class StyleController extends Controller
         }
     }
 
+    // UPDATE STYLE
     public function update(Request $request, $id) {
         // CHECK IF THERE IS STYLE WITH THAT ID
         $foundStyle = Style::find($id);

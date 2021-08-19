@@ -49,6 +49,7 @@ Route::get('/restaurant/{slug}', [RestaurantController::class, 'showBySlug']);
 Route::get('/delete/restaurant/{id}', [RestaurantController::class, 'destroy']);
 Route::post('/restaurant/new', [RestaurantController::class, 'store']);
 Route::post('/restaurant/{id}/edit-footer', [RestaurantController::class, 'editFooter']);
+Route::patch('/styles/select/{id}', [RestaurantController::class, 'select']);
 
 //Category
 Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);

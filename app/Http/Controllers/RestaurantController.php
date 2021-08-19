@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Language;
 use App\Models\Restaurant;
+use App\Models\Style;
+use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,6 @@ class RestaurantController extends Controller
             'translations',
             'languages',
             'categories',
-            'styles',
             'categories.translations',
             'categories.subcategories',
             'categories.subcategories.translations',
@@ -192,5 +193,45 @@ class RestaurantController extends Controller
                 ]
             ]
         );
+    }
+
+    // SELECT STYLE
+    public function select($id, Request $request) {
+    
+        $foundRestaurant = Restaurant::findOrFail($id);
+
+        $validator = Validator::make($request->all(),
+            [
+                'styleId' => ['required']
+            ],
+            [],
+            []
+        );
+        try {
+            if ($validator->fails()) {
+                return response() -> json([
+                    'message' => 'Something is wrong.'
+                ], 400); 
+            }
+            $data = $validator -> valid();
+
+            $foundStyle = Style::findOrFail($data['styleId']);
+
+            $foundRestaurant['style_id'] = $data['styleId'];
+
+            $foundRestaurant->save();
+
+            return response() -> json(
+                [
+                'data' => [
+                    'message' => 'Style selected successfully',
+                ]
+            ]);
+        } catch (\Error $e) {
+            return response() -> json(
+                [
+                'error' => 'Something went wrong.'
+            ]);
+        }
     }
 }

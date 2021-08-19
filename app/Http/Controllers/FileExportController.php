@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Restaurant;
-use stdClass;
+use App\Models\Style;
 
 class FileExportController extends Controller
 {
@@ -17,28 +17,25 @@ class FileExportController extends Controller
 
         $socials_array = (object)$socials_array;
 
-        $style_array = new stdClass();
-
-        $restaurant->styles->each(function($style) use (&$style_array) {
-            $style_array->headerImageMaxHeight = $style->header_image_max_height;
-            $style_array->itemTitleFontFamily = $style->item_title_font_family;
-            $style_array->itemTitleDisplay = $style->item_title_display;
-
-            $style_array->itemSubtitleColor = $style->item_subtitle_color;
-            $style_array->itemDescriptionColor = $style->item_description_color;
-
-            $style_array->itemTitleFontWeight = $style->item_title_font_weight;
-            $style_array->itemSubtitleFontWeight = $style->item_subtitle_font_weight;
-            $style_array->itemDescriptionFontWeight = $style->item_description_font_weight;
-            $style_array->itemPriceFontWeight = $style->item_price_font_weight;
-
-            $style_array->itemTitleFontSize = $style->item_title_font_size;
-            $style_array->itemSubtitleFontSize = $style->item_subtitle_font_size;
-            $style_array->itemDescriptionFontSize = $style->item_description_font_size;
-            $style_array->itemPriceFontSize = $style->item_price_font_size;
-
-            $style_array->itemPriceWidth = $style->item_price_width;
-        });
+        // CODE FOR GETTING THE STYLE OBJECT FROM OTHER TABLE
+        $selectedStyleId = $restaurant->style_id;
+        $styleFromDB = Style::find($selectedStyleId);
+        $selectedStyle = new Style;
+        
+        $selectedStyle->headerImageMaxHeight = $styleFromDB->header_image_max_height;
+        $selectedStyle->itemTitleFontFamily = $styleFromDB->item_title_font_family;
+        $selectedStyle->itemTitleDisplay = $styleFromDB->item_title_display;
+        $selectedStyle->itemSubtitleColor = $styleFromDB->item_subtitle_color;
+        $selectedStyle->itemDescriptionColor = $styleFromDB->item_description_color;
+        $selectedStyle->itemTitleFontWeight = $styleFromDB->item_title_font_weight;
+        $selectedStyle->itemSubtitleFontWeight = $styleFromDB->item_subtitle_font_weight;
+        $selectedStyle->itemDescriptionFontWeight = $styleFromDB->item_description_font_weight;
+        $selectedStyle->itemPriceFontWeight = $styleFromDB->item_price_font_weight;
+        $selectedStyle->itemTitleFontSize = $styleFromDB->item_title_font_size;
+        $selectedStyle->itemSubtitleFontSize = $styleFromDB->item_subtitle_font_size;
+        $selectedStyle->itemDescriptionFontSize = $styleFromDB->item_description_font_size;
+        $selectedStyle->itemPriceFontSize = $styleFromDB->item_price_font_size;
+        $selectedStyle->itemPriceWidth = $styleFromDB->item_price_width;
 
         $languages_array = [];
 
@@ -158,7 +155,7 @@ class FileExportController extends Controller
         $json = $data['restaurant'][0] = [
                 'name' => $restaurant->translations[0]->name,
                 'socials' => $socials_array,
-                'style' => $style_array,
+                'style' => $selectedStyle,
                 'currency' => $restaurant->currency,
                 'languages' => $languages_array,
                 'footer_text' => $footer_array,
@@ -174,7 +171,6 @@ class FileExportController extends Controller
             'translations',
             'languages',
             'categories',
-            'styles',
             'categories.translations',
             'categories.subcategories',
             'categories.subcategories.translations',
@@ -194,7 +190,6 @@ class FileExportController extends Controller
             'translations',
             'languages',
             'categories',
-            'styles',
             'categories.translations',
             'categories.subcategories',
             'categories.subcategories.translations',

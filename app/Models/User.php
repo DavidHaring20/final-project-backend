@@ -20,11 +20,7 @@ class User extends Authenticatable
     protected $primaryKey = 'id';
     public $incrementing = 'true';
     public $timestaps = 'false';
-
-    public function admin() {
-        return $this->hasOne(Admin::class);
-    }
-    
+  
     protected $fillable = [
         'name',
         'email',

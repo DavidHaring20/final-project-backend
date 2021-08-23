@@ -41,7 +41,7 @@ class StyleFactory extends Factory
             'item_subtitle_font_size' => $this->faker->randomElement($fontSizes),
             'item_description_font_size' => $this->faker->randomElement($fontSizes),
             'item_price_font_size' => $this->faker->randomElement($fontSizes),
-            'item_price_width' => $this->faker->randomElement($fontSizes),
+            'item_price_width' => $this->faker->randomElement($fontSizes)
         ];
     }
 }

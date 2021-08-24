@@ -124,7 +124,7 @@ class LogInController extends Controller
                 [
                     'statusCode' => 200,
                     'authenticated' => true,
-                    'message' => ''
+                    'user' => $user
                 ]
             );
         } catch (ModelNotFoundException $error) {

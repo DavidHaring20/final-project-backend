@@ -33,4 +33,8 @@ class Restaurant extends Model
     public function categories() {
         return $this->hasMany('App\Models\Category');
     }
+
+    public function social() {
+        return $this -> hasOne(Social::class);
+    }
 }

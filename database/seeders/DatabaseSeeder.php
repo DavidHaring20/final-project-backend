@@ -16,7 +16,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LanguagesSeeder::class,
             RestaurantSeeder::class,
-            StyleSeeder::class
+            UserSeeder::class,
+            StyleSeeder::class,
+            SocialSeeder::class
         ]);
         // \App\Models\User::factory(10)->create();
     }

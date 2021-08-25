@@ -23,7 +23,7 @@ class CreateSocialsTable extends Migration
             $table->string('twitter_url')->nullable();
             $table->string('instagram_url')->nullable();
 
-            $table->unsignedBigInteger('restaurant_id')->nullable();
+            $table->unsignedBigInteger('restaurant_id')->unique();
             $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('CASCADE');
 
             $table->timestamps();

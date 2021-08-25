@@ -12,6 +12,7 @@ use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StyleController;
+use App\Http\Controllers\SocialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,10 @@ Route::get('/delete/item/{id}', [ItemController::class, 'destroy']);
 //Amount
 Route::post('/item/{id}/amount', [AmountController::class, 'store']);
 Route::get('/delete/amount/{id}', [AmountController::class, 'destroy']);
+
+// Social
+Route::get('/social/{restaurant_id}', [SocialController::class, 'show']);
+Route::patch('/social/{restaurant_id}', [SocialController::class, 'update']);
 
 // Style 
 Route::get('/styles', [StyleController::class, 'index']);

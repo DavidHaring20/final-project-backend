@@ -13,6 +13,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StyleController;
 use App\Http\Controllers\SocialController;
+use App\Models\Social;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +74,7 @@ Route::get('/delete/amount/{id}', [AmountController::class, 'destroy']);
 
 // Social
 Route::get('/social/{restaurant_id}', [SocialController::class, 'show']);
+Route::post('/social/{restaurant_id}', [SocialController::class, 'store']);
 Route::patch('/social/{restaurant_id}', [SocialController::class, 'update']);
 
 // Style 

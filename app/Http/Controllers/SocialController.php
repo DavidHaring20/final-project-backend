@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Restaurant;
 use App\Models\Social;
+use App\Models\Style;
 use Illuminate\Http\Request;
 use Validator;
+use Error;
 
 class SocialController extends Controller
 {
@@ -34,6 +36,46 @@ class SocialController extends Controller
                 'social' => $social                
             ]
         );
+    }
+
+    public function store($restaurant_id) {
+        // GET RESTAURANT WITH restaurant_id
+        $restaurant = Restaurant::findOrFail($restaurant_id);
+
+        // IF SOCIAL DOESN'T EXIST, THEN CREATE IT AND ADD restaurant_id TO IT  
+        if ($restaurant -> social == null || $restaurant -> social == "") {
+            try {
+                Social::create(
+                    [
+                        'facebook_url' => '',
+                        'foursquare_url' => '',
+                        'google_url' => '',
+                        'instagram_url' => '',
+                        'tripadvisor_url' => '',
+                        'twitter_url' => '',
+                        'restaurant_id' => $restaurant_id
+                    ]
+                ); 
+
+                $newestSocialId = Social::max('id');
+                $newestSocial = Social::find($newestSocialId);
+
+                return response() -> json(
+                    [
+                        'message' => 'Created new Social',
+                        'newSocial' => $newestSocial
+                    ]
+                );
+            } catch (Error $error) {
+                print_r($error->getMessage()); 
+            }
+        } else {
+            return response() -> json(
+                [
+                    'message' => 'There is already social for that resturant.'
+                ]
+            );
+        }
     }
 
     public function update(Request $request, $restaurant_id) {

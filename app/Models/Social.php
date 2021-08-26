@@ -9,6 +9,8 @@ class Social extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $table = 'socials';
     protected $primaryKey = 'id';
     public $timestamps = true;

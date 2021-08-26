@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Restaurant;
+use App\Models\Social;
 use App\Models\Style;
 
 class FileExportController extends Controller
 {
     public function toJson($restaurant) {
-        $socials_array = [];
+        $social = new Social;
 
-        $restaurant->networks->each(function($social) use (&$socials_array) {
-            $social_name = $social->name;
-            $socials_array[$social_name] = $social->link;
-        });
-
-        $socials_array = (object)$socials_array;
+        $social -> facebook_url = $restaurant -> social -> facebook_url;
+        $social -> foursquare_url = $restaurant -> social -> foursquare_url;
+        $social -> google_url = $restaurant -> social -> google_url;
+        $social -> instagram_url = $restaurant -> social -> instagram_url;
+        $social -> tripadvisor_url = $restaurant -> social -> tripadvisor_url;
+        $social -> twitter_url = $restaurant -> social -> twitter_url;
 
         // CODE FOR GETTING THE STYLE OBJECT FROM OTHER TABLE
         $selectedStyleId = $restaurant->style_id;
@@ -154,7 +155,7 @@ class FileExportController extends Controller
 
         $json = $data['restaurant'][0] = [
                 'name' => $restaurant->translations[0]->name,
-                'socials' => $socials_array,
+                'socials' => $social,
                 'style' => $selectedStyle,
                 'currency' => $restaurant->currency,
                 'languages' => $languages_array,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StyleMaster;
+use App\Models\Style;
 use Exception;
 use Illuminate\Http\Request;
 use Validator;
@@ -29,7 +30,7 @@ class StyleMasterController extends Controller
         );
     }
 
-    // CREATE NEW STYLE PROPERTY 
+    // CREATE NEW STYLE PROPERTY AND ADD IT TO ALL STYLES 
     public function store(Request $request) {
         $validator = Validator::make($request->all(),
             [
@@ -49,14 +50,37 @@ class StyleMasterController extends Controller
         }
 
         $data = $validator -> valid();
+        $key = $data['key'];
+        $value = $data['value'];
 
         try {
             StyleMaster::create(
                 [
-                    'key'   => $data['key'],
-                    'value' => $data['value']
+                    'key' => $key,
+                    'value' => $value
                 ]
             );
+        } catch (Exception $exception) {
+            return response() -> json(
+                [
+                    'errorMessage' => $exception -> getMessage()
+                ]
+            );
+        }
+
+        try {
+            // SEARCH FOR restaurant_id IN STYLE TABLE
+            $differentRestaurants = Style::all()->unique();
+
+            foreach ($differentRestaurants as $restaurant) {
+                Style::create(
+                    [
+                        'key'   => $key,
+                        'value' => $value,
+                        'restaurant_id' => $restaurant -> restaurant_id
+                    ]
+                );
+            }
         } catch (Exception $exception) {
             return response() -> json(
                 [
@@ -69,8 +93,9 @@ class StyleMasterController extends Controller
         $lastStyleMasterProperty = StyleMaster::find($idOfLastStyleMasterProperty);
         return response() -> json(
             [
-                'message' => 'Successfully created style master property.',
-                'newStyleMasterProperty' => $lastStyleMasterProperty
+                'message'                   => 'Successfully created style master property and property in Style Table.',
+                'newStyleMasterProperty'    => $lastStyleMasterProperty,
+                'addedRowsInStyleTable'     => sizeof($differentRestaurants)
             ]
         );
     }
@@ -78,13 +103,17 @@ class StyleMasterController extends Controller
     // DELETE STYLE PROPERTY
     public function destroy($id) {
         $styleMasterProperty = StyleMaster::find($id);
+        $key = $styleMasterProperty -> key;
 
         $styleMasterProperty -> delete();
+        $deletedRows = Style::where('key', '=', $key) -> delete();
+
 
         return response() -> json(
             [
-                'message'               => 'Successfully deleted styleMasterProperty.',
-                'deletedStyleProperty'  => $styleMasterProperty
+                'message'                       => 'Successfully deleted styleMasterProperty.',
+                'deletedStyleProperty'          => $styleMasterProperty,
+                'deletedRowsFromStyleTable'     => $deletedRows
             ]
         );
     }

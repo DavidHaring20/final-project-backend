@@ -13,9 +13,8 @@ class Style extends Model
     ];
 
     protected $table = 'styles';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'restaurant_id';
     public $timestamps = false;
-    public $incrementing = 'true';
 
     public function restaurant() {
         return $this->belongsTo('App\Restaurant');

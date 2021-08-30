@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Language;
 use App\Models\Restaurant;
 use App\Models\Style;
+use App\Models\StyleMaster;
 use Validator;
 use Exception;
 use Illuminate\Http\Request;
@@ -95,6 +96,7 @@ class RestaurantController extends Controller
             $footers = collect(json_decode($request->footers));
             $languages = collect(json_decode($request->languages));
 
+
             $slug = $names['hr'];
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
 
@@ -135,6 +137,19 @@ class RestaurantController extends Controller
                         }
                     }
                     DB::commit();
+
+                    $restaurant_id = Restaurant::max('id');
+                    $stylePropertiesFromMasterStyle = StyleMaster::all();
+
+
+                    foreach ($stylePropertiesFromMasterStyle as $styleProperty) {
+                        Style::create( [
+                            'key' => $styleProperty['key'],
+                            'value' => $styleProperty['value'],
+                            'restaurant_id' => $restaurant_id
+                        ]
+                        );
+                    }
                 }
                 else {
                     throw new Exception('Currency is empty');

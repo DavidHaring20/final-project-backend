@@ -13,6 +13,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StyleController;
 use App\Http\Controllers\SocialController;
+use App\Http\Controllers\StyleMasterController;
 use App\Models\Social;
 
 /*
@@ -78,8 +79,8 @@ Route::post('/social/{restaurant_id}', [SocialController::class, 'store']);
 Route::patch('/social/{restaurant_id}', [SocialController::class, 'update']);
 
 // Style 
-Route::get('/styles', [StyleController::class, 'index']);
-Route::get('/styles/{id}', [StyleController::class, 'show']);
-Route::post('/styles', [StyleController::class, 'store']);
-Route::delete('/styles/{id}', [StyleController::class, 'destroy']);
-Route::patch('/styles/{id}', [StyleController::class, 'update']);
+
+// StyleMaster
+Route::get('/styleMaster', [StyleMasterController::class, 'index']);
+Route::post('/styleMaster', [StyleMasterController::class, 'store']);
+Route::delete('/styleMaster/{id}', [StyleMasterController::class, 'destroy']);

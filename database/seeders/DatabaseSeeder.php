@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\StyleMaster;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +19,8 @@ class DatabaseSeeder extends Seeder
             RestaurantSeeder::class,
             UserSeeder::class,
             StyleSeeder::class,
-            SocialSeeder::class
+            SocialSeeder::class,
+            StyleMaster::class
         ]);
         // \App\Models\User::factory(10)->create();
     }

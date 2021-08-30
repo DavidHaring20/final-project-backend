@@ -18,8 +18,6 @@ class CreateStyleDefaultPropertyValuesTable extends Migration
 
             $table -> string('key');
             $table -> string('value'); 
-
-            $table->timestamps();
         });
     }
 

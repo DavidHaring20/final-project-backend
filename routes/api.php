@@ -11,7 +11,7 @@ use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\StyleController;
+use App\Http\Controllers\StylePropertyController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StyleMasterController;
 use App\Models\Social;
@@ -79,6 +79,8 @@ Route::post('/social/{restaurant_id}', [SocialController::class, 'store']);
 Route::patch('/social/{restaurant_id}', [SocialController::class, 'update']);
 
 // Style 
+Route::get('/style/{id}', [StylePropertyController::class, 'show']);
+Route::patch('/style/{id}', [StylePropertyController::class, 'update']);
 
 // StyleMaster
 Route::get('/styleMaster', [StyleMasterController::class, 'index']);

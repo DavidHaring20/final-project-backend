@@ -100,7 +100,7 @@ class StyleMasterController extends Controller
         );
     }
 
-    // DELETE STYLE PROPERTY
+    // DELETE STYLE PROPERTY FROM MASTERSTYLE AND ALL OTHER STYLES
     public function destroy($id) {
         $styleMasterProperty = StyleMaster::find($id);
         $key = $styleMasterProperty -> key;

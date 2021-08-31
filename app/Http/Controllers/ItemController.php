@@ -54,6 +54,15 @@ class ItemController extends Controller
                 //Add amounts
 
                 foreach($amounts as $amount) {
+                    if ($amount->price == "" || $amount->price == null) {
+                        DB::rollBack();
+                        return response() -> json(
+                            [
+                                'message' => 'Price can\'t be empty !'
+                            ],
+                        );
+                    }
+
                     $newAmount = $newItem->amounts()->create([
                         'position' => 1,
                         'price' => $amount->price
@@ -95,9 +104,6 @@ class ItemController extends Controller
     }
 
     public function update($id, Request $request) {
-
-        // return($request);
-
         $titles = collect(json_decode($request->titles));
         $subtitles = collect(json_decode($request->subtitles));
         $descriptions = collect(json_decode($request->descriptions));
@@ -124,6 +130,15 @@ class ItemController extends Controller
 
             //Update amounts
             foreach($amounts as $amount) {
+                if ($amount['price'] == "" || $amount['price'] == null) {
+                    DB::rollBack();
+                    return response() -> json(
+                        [
+                            'message' => 'Price can\'t be empty !'
+                        ],
+                    );
+                }
+
                 $updatedAmount = $item->amounts()->updateOrCreate(
                     ['id' => $amount['id']],
                     ['price' => $amount['price']]

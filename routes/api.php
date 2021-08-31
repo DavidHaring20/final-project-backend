@@ -14,7 +14,6 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StylePropertyController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StyleMasterController;
-use App\Models\Social;
 
 /*
 |--------------------------------------------------------------------------

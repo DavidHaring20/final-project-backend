@@ -19,24 +19,17 @@ class FileExportController extends Controller
         $social -> twitter_url = $restaurant -> social -> twitter_url;
 
         // CODE FOR GETTING THE STYLE OBJECT FROM OTHER TABLE
-        $selectedStyleId = $restaurant->style_id;
-        $styleFromDB = Style::find($selectedStyleId);
-        $selectedStyle = new Style;
-        
-        $selectedStyle->headerImageMaxHeight = $styleFromDB->header_image_max_height;
-        $selectedStyle->itemTitleFontFamily = $styleFromDB->item_title_font_family;
-        $selectedStyle->itemTitleDisplay = $styleFromDB->item_title_display;
-        $selectedStyle->itemSubtitleColor = $styleFromDB->item_subtitle_color;
-        $selectedStyle->itemDescriptionColor = $styleFromDB->item_description_color;
-        $selectedStyle->itemTitleFontWeight = $styleFromDB->item_title_font_weight;
-        $selectedStyle->itemSubtitleFontWeight = $styleFromDB->item_subtitle_font_weight;
-        $selectedStyle->itemDescriptionFontWeight = $styleFromDB->item_description_font_weight;
-        $selectedStyle->itemPriceFontWeight = $styleFromDB->item_price_font_weight;
-        $selectedStyle->itemTitleFontSize = $styleFromDB->item_title_font_size;
-        $selectedStyle->itemSubtitleFontSize = $styleFromDB->item_subtitle_font_size;
-        $selectedStyle->itemDescriptionFontSize = $styleFromDB->item_description_font_size;
-        $selectedStyle->itemPriceFontSize = $styleFromDB->item_price_font_size;
-        $selectedStyle->itemPriceWidth = $styleFromDB->item_price_width;
+        $styles = $restaurant -> styles;
+        $style = new Style();
+
+        foreach ($styles as $styleProperty) {
+            $key = $styleProperty['key'];
+            $value = $styleProperty['value'];
+
+            $style -> $key = $value;
+        }
+
+
 
         $languages_array = [];
 
@@ -156,7 +149,7 @@ class FileExportController extends Controller
         $json = $data['restaurant'][0] = [
                 'name' => $restaurant->translations[0]->name,
                 'socials' => $social,
-                'style' => $selectedStyle,
+                'style' => $style,
                 'currency' => $restaurant->currency,
                 'languages' => $languages_array,
                 'footer_text' => $footer_array,

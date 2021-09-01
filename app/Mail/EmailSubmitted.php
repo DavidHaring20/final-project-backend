@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -30,7 +29,7 @@ class EmailSubmitted extends Mailable
      */
     public function build()
     {
-        return $this->from('95f1301a34-4c4098@inbox.mailtrap.io', 'Mailtrap')
+        return $this->from($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME'])
                     ->view('email', ['passcode' => $this->passcode]);
     }
 }

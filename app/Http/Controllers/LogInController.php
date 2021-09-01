@@ -82,7 +82,7 @@ class LogInController extends Controller
         // SEND AN EMAIL WITH TEXT AND PASSCODE
         // CREATE NEW USER AND STORE EMAIL AND PASSCODE
         try {
-            Mail::to('95f1301a34-4c4098@inbox.mailtrap.io')->send(new EmailSubmitted($passcode));
+            Mail::to($email)->send(new EmailSubmitted($passcode));
 
             $user = new User;
 

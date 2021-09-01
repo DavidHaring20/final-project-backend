@@ -86,8 +86,9 @@ class LogInController extends Controller
 
             $user = new User;
 
-            $user->email = $email;
-            $user->passcode = $passcode;
+            $user -> email = $email;
+            $user -> passcode = $passcode;
+            $user -> role = 'role';
 
             $user->save();
 

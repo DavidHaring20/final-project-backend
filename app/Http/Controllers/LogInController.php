@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSubmitted;
 use Error;
 use Exception;
+use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LogInController extends Controller 
@@ -121,11 +122,17 @@ class LogInController extends Controller
                 ->where('passcode', '=', $passcode)
                 ->firstOrFail();  
 
+            // HASH PASSCODE TO GET auth_token FOR SESSION
+            $authToken = Hash::make($passcode, [
+                'rounds' => 12
+            ]);
+
             return response()->json(
                 [
-                    'statusCode' => 200,
+                    'statusCode'    => 200,
                     'authenticated' => true,
-                    'user' => $user
+                    'user'          => $user,
+                    'authToken'     => $authToken
                 ]
             );
         } catch (ModelNotFoundException $error) {

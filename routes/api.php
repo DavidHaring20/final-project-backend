@@ -45,7 +45,7 @@ Route::get('/languages', [LanguageController::class, 'index']);
 Route::post('/languages/new', [LanguageController::class, 'store']);
 
 //Restaurant
-Route::get('/restaurants', [RestaurantController::class, 'index']);
+Route::get('/restaurants/{userId}', [RestaurantController::class, 'index']);
 Route::get('/restaurant/show/{id}', [RestaurantController::class, 'show']);
 Route::get('/restaurant/{slug}', [RestaurantController::class, 'showBySlug']);
 Route::get('/delete/restaurant/{id}', [RestaurantController::class, 'destroy']);

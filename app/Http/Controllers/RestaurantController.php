@@ -6,12 +6,13 @@ use App\Models\Language;
 use App\Models\Restaurant;
 use App\Models\Style;
 use App\Models\StyleMaster;
+use App\Models\User;
 use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
+use function PHPSTORM_META\type;
 
 class RestaurantController extends Controller
 {
@@ -65,17 +66,15 @@ class RestaurantController extends Controller
         );
     }
 
-    public function index() {
-        $restaurants = Restaurant::with(
-            'translations',
-            'languages',
-            )->get();
+    public function index($userId) {
+        // Get restaurant with translations and languages where it matches User Id
+        $restaurants = Restaurant::where('user_id', $userId)->with('translations', 'languages')->get();
 
         return response()->json(
             [
                 'data' =>
                 [
-                    'restaurants' => $restaurants,
+                    'restaurants' => $restaurants
                 ]
             ]
         );

@@ -84,81 +84,85 @@ class RestaurantController extends Controller
     public function store(Request $request) {
 
         $validatedData = $request->validate([
-            'currency' => ['required'],
-            'names' => ['required'],
-            'footers' => ['required'],
+            'currency'  => ['required'],
+            'names'     => ['required'],
+            'footers'   => ['required'],
             'languages' => ['required'],
+            'userId'    => ['required']
         ]);
 
+
+        // Proceed if data all data is provided
         if($validatedData) {
+            // Collect and transform data in using 'json_decode'
             $currency = $request->currency;
             $names = collect(json_decode($request->names));
             $footers = collect(json_decode($request->footers));
             $languages = collect(json_decode($request->languages));
+            $userId = intval(json_decode($request -> userId));
 
-
+            // Create slug
             $slug = $names['hr'];
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
 
-            try {
-                DB::beginTransaction();
+            // Create restaurant with it's languages and translations for that languages
+            DB::beginTransaction();
 
-                if($currency) {
-                    $newRestaurant = Restaurant::create(
-                        [
-                            'position' => 1,
-                            'currency' => $currency,
-                            'slug' => $slug
-                        ]
+            if($currency) {
+                $newRestaurant = Restaurant::create(
+                    [
+                        'position'  => 1,
+                        'currency'  => $currency,
+                        'slug'      => $slug,
+                        'user_id'   => $userId
+                    ]
+                );
+
+                foreach($languages as $language) {
+                    $existingLanguage = Language::firstOrCreate(
+                        ['language_code' => $language->language_code],
+                        ['language_name' => $language->language_name]
                     );
 
-                    foreach($languages as $language) {
-                        $existingLanguage = Language::firstOrCreate(
-                            ['language_code' => $language->language_code],
-                            ['language_name' => $language->language_name]
-                        );
+                    $newRestaurant->languages()->attach($existingLanguage);
+                }
 
-                        $newRestaurant->languages()->attach($existingLanguage);
-                    }
-
-                    foreach($names as $languageCode => $name) {
-                        if($name) {
-                            $newRestaurant->translations()->create(
-                                [
-                                    'language_code' => $languageCode,
-                                    'is_default' => false,
-                                    'name' => $name,
-                                    'footer' => $footers[$languageCode]
-                                ]
-                            );
-                        }
-                        else {
-                            throw new Exception('Name is empty');
-                        }
-                    }
-                    DB::commit();
-
-                    $restaurant_id = Restaurant::max('id');
-                    $stylePropertiesFromMasterStyle = StyleMaster::all();
-
-
-                    foreach ($stylePropertiesFromMasterStyle as $styleProperty) {
-                        Style::create( [
-                            'key' => $styleProperty['key'],
-                            'value' => $styleProperty['value'],
-                            'restaurant_id' => $restaurant_id
-                        ]
+                foreach($names as $languageCode => $name) {
+                    if($name) {
+                        $newRestaurant->translations()->create(
+                            [
+                                'language_code' => $languageCode,
+                                'is_default' => false,
+                                'name' => $name,
+                                'footer' => $footers[$languageCode]
+                            ]
                         );
                     }
+                    else {
+                        throw new Exception('Name is empty');
+                    }
                 }
-                else {
-                    throw new Exception('Currency is empty');
+                
+                // Save changes to all tables done during creating of a restaurant
+                DB::commit();
+
+                // Create style which is clone of 'masterStyle' for newly created restaurant
+                $restaurant_id = Restaurant::max('id');
+                $stylePropertiesFromMasterStyle = StyleMaster::all();
+
+                foreach ($stylePropertiesFromMasterStyle as $styleProperty) {
+                    Style::create( [
+                        'key' => $styleProperty['key'],
+                        'value' => $styleProperty['value'],
+                        'restaurant_id' => $restaurant_id
+                    ]
+                    );
                 }
-            } catch(Throwable $e) {
-                DB::rollBack();
-                report($e);
+            } else {
+                throw new Exception('Currency is empty');
             }
 
+            // Get restaurant which will be returned to the DOM in Frontend
             $newRestaurant = Restaurant::with('translations')->find($newRestaurant->id);
 
             return response()->json(

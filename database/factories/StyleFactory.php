@@ -57,7 +57,8 @@ class StyleFactory extends Factory
             'item_subtitle_font_size' => '14px',
             'item_description_font_size' => '14px',
             'item_price_font_size' => '18px',
-            'item_price_width' => '70px'  
+            'item_price_width' => '70px',
+            'restaurant_id' => 1
         ];
     }
 }

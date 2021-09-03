@@ -17,7 +17,8 @@ class RestaurantSeeder extends Seeder
         $restaurant = Restaurant::updateOrCreate([
             'position' => 1,
             'currency' => 'kn',
-            'slug' => 'test-restaurant'
+            'slug' => 'test-restaurant',
+            'user_id' => 1
             ]
         );
 

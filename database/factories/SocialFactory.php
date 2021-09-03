@@ -21,7 +21,7 @@ class SocialFactory extends Factory
      */
     public function definition()
     {
-        $randomName = strval($this->faker->userName());
+        $randomName = 'name-text';
         return [
             
             'tripadvisor_url' => $randomName."/tripadvisor.com",

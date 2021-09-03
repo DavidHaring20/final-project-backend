@@ -16,11 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             LanguagesSeeder::class,
-            RestaurantSeeder::class,
             UserSeeder::class,
-            StyleSeeder::class,
+            RestaurantSeeder::class,
             SocialSeeder::class,
-            StyleMaster::class
+            StyleMasterSeeder::class
         ]);
         // \App\Models\User::factory(10)->create();
     }

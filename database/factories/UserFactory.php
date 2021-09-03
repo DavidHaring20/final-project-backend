@@ -21,11 +21,11 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $roles = array('admin', 'user');
+        // $roles = array('admin', 'user');
         return [
-            'email' => $this->faker->unique()->email(),
-            'passcode' => $this->faker->randomNumber(6, true),
-            'role' => $this->faker->randomElement($roles),
+            'email' => 'login@pocketmenu.club',
+            'passcode' => 'auc7ure5jhe@ukh6ENQ',
+            'role' => 'admin',
         ];
     }
 

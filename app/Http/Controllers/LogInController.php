@@ -91,8 +91,7 @@ class LogInController extends Controller
         $passcode = strval(rand(100000, 999999));
 
         // If there is a user with email, just update his passcode
-        $usersArrays = User::where('email', $email) -> get();
-        $user = $usersArrays[0];
+        $user = User::where('email', $email) -> first();
 
         if ($user) {
             $user -> passcode = $passcode;

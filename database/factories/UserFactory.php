@@ -23,8 +23,8 @@ class UserFactory extends Factory
     {
         // $roles = array('admin', 'user');
         return [
-            'email' => 'login@pocketmenu.club',
-            'passcode' => 'auc7ure5jhe@ukh6ENQ',
+            'email' => $_ENV['MAIL_USERNAME'],
+            'passcode' => $_ENV['MAIL_PASSWORD'],
             'role' => 'admin',
         ];
     }

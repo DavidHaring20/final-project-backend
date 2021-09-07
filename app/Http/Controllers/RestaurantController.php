@@ -101,7 +101,7 @@ class RestaurantController extends Controller
             $userId = intval(json_decode($request -> userId));
 
             // Create slug
-            $slug = $names['hr'];
+            $slug = $names['Hrvatski'];
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
 
             // Create restaurant with it's languages and translations for that languages
@@ -118,22 +118,20 @@ class RestaurantController extends Controller
                 );
 
                 foreach($languages as $language) {
-                    $existingLanguage = Language::firstOrCreate(
-                        ['language_code' => $language->language_code],
-                        ['language_name' => $language->language_name]
-                    );
+                    $existingLanguage = Language::where('language_name', $language)->firstOrFail();
 
                     $newRestaurant->languages()->attach($existingLanguage);
                 }
 
-                foreach($names as $languageCode => $name) {
+                foreach($names as $languageName => $name) {
                     if($name) {
+                        $existingLanguage = Language::where('language_name', $languageName)->firstOrFail();
                         $newRestaurant->translations()->create(
                             [
-                                'language_code' => $languageCode,
+                                'language_code' => $existingLanguage->language_code,
                                 'is_default' => false,
                                 'name' => $name,
-                                'footer' => $footers[$languageCode]
+                                'footer' => $footers[$languageName]
                             ]
                         );
                     }

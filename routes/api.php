@@ -43,8 +43,8 @@ Route::post('/import-json', [FileImportController::class, 'importJSON']);
 //Languages
 Route::get('/languages', [LanguageController::class, 'index']);
 Route::post('/languages/new', [LanguageController::class, 'store']);
-Route::delete('/languages/{id}', [LanguageController::class, 'destroy']);
-Route::patch('/languages/{id}', [LanguageController::class, 'update']);
+Route::delete('/languages/{code}', [LanguageController::class, 'destroy']);
+Route::patch('/languages/{code}', [LanguageController::class, 'update']);
 
 //Restaurant
 Route::get('/restaurants/{userId}', [RestaurantController::class, 'index']);

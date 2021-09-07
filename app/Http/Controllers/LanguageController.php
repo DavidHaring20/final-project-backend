@@ -30,23 +30,34 @@ class LanguageController extends Controller
         ]);
 
         if($validatedData) {
-            $languageCode = collect($request->languageCode);
-            $languageName = collect($request->languageName);
+            $languageCode = $request->languageCode;
+            $languageName = $request->languageName;
 
-            Language::create([
-                'language_code' => $languageCode[0],
-                'language_name' => $languageName[0]
-            ]);
+            $language = Language::create(
+                [
+                    'language_code' => $languageCode,
+                    'language_name' => $languageName
+                ]
+            );
+
+            return response() -> json(
+                [
+                    'message'       => 'Language successfully created',
+                    'newLanguage'   => $language
+                ]
+            );
         }
         else {
-            return response()->json(
-                'The language code and language name fields have to be provided.'
+            return response() -> json(
+                [
+                    'message' => 'The language code and language name fields have to be provided.'
+                ]
             );
         }
     }
 
-    public function destroy($id) {
-        $deletedLanguage = Language::findOrFail($id);
+    public function destroy($code) {
+        $deletedLanguage = Language::where('language_code', $code)->firstOrFail();
         $deletedLanguage -> delete();
 
         return response() -> json(
@@ -57,7 +68,7 @@ class LanguageController extends Controller
         );
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $code) {
         $validator = Validator::make($request -> all(),
             [
                 'languageCode' => ['required', 'string', 'max:10'],
@@ -78,7 +89,7 @@ class LanguageController extends Controller
         $data = $validator -> valid();
 
         // Get Language from DB
-        $language = Language::findOrFail($id);
+        $language = Language::where('language_code', $code) -> firstOrFail();
 
         // Update values 
         $language -> language_code = $data['languageCode'];

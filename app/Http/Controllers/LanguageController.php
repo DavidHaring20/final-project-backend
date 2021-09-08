@@ -87,14 +87,14 @@ class LanguageController extends Controller
         $validator = Validator::make($request -> all(),
             [
                 'languageCode' => [
-                    'required', 
-                    Rule::unique('languages', 'language_code') -> ignore($request -> languageCode, 'language_code'), 
+                    'required',
+                    Rule::unique('languages', 'language_code') -> ignore($code, 'language_code'), 
                     'min:2', 
                     'max:3'
                 ],
                 'languageName' => [
                     'required', 
-                    Rule::unique('languages', 'language_name') -> ignore($request -> languageName, 'language_name')
+                    Rule::unique('languages', 'language_name') -> ignore($code, 'language_code')
                 ]
             ],
             [],
@@ -105,7 +105,7 @@ class LanguageController extends Controller
             return response() -> json(
                 [
                     'errorMessage' => $validator -> messages()
-                ], 400
+                ]
             );
         }
 

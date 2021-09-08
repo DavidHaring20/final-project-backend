@@ -138,6 +138,16 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'languageCode'  => [
+            'required'  => 'Language Code field can\'t be empty.',
+            'unique'    => 'There is already language with such Language Code. The Language Code must be unique.',
+            'min'       => 'Language Code can\' be shorter than 2 characters.',
+            'max'       => 'Language Code can\' be longer than 3 characters.'
+        ],
+        'languageName'  => [
+            'required'  => 'Language Name field can\'t be empty',
+            'unique'    => 'There is already Language with such Language Name. The Language Name must be unique.'
+        ]
     ],
 
     /*

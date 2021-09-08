@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Validator;
+use Illuminate\Validation\Rule;
 use App\Models\Language;
 use Illuminate\Http\Request;
 
@@ -24,12 +25,26 @@ class LanguageController extends Controller
 
     public function store(Request $request) {
 
-        $validatedData = $request->validate([
-            'languageCode' => ['required'],
-            'languageName' => ['required'],
-        ]);
+        $validator = Validator::make($request -> all(),
+            [
+                'languageCode' => ['required', 'unique:languages,language_code', 'min:2', 'max:3'],
+                'languageName' => ['required', 'unique:languages,language_name']
+            ],
+            [],
+            []
+        );
 
-        if($validatedData) {
+        if ($validator -> fails()) {
+            return response() -> json(
+                [
+                    'errorMessage' => $validator -> messages()
+                ]
+            );
+        }
+
+        $data = $validator -> valid();
+
+        if($data) {
             $languageCode = $request->languageCode;
             $languageName = $request->languageName;
 
@@ -71,8 +86,16 @@ class LanguageController extends Controller
     public function update(Request $request, $code) {
         $validator = Validator::make($request -> all(),
             [
-                'languageCode' => ['required', 'string', 'max:10'],
-                'languageName' => ['required', 'string', 'max:20']
+                'languageCode' => [
+                    'required', 
+                    Rule::unique('languages', 'language_code') -> ignore($request -> languageCode, 'language_code'), 
+                    'min:2', 
+                    'max:3'
+                ],
+                'languageName' => [
+                    'required', 
+                    Rule::unique('languages', 'language_name') -> ignore($request -> languageName, 'language_name')
+                ]
             ],
             [],
             []
@@ -81,7 +104,7 @@ class LanguageController extends Controller
         if ($validator -> fails()) {
             return response() -> json(
                 [
-                    'errorMessage' => 'Please check inputed data.'
+                    'errorMessage' => $validator -> messages()
                 ], 400
             );
         }

@@ -149,9 +149,18 @@ return [
             'unique'    => 'There is already Language with such Language Name. The Language Name must be unique.'
         ],
         'slug'          => [
-            'required'  => 'Slug Field can\'t be empty', 
+            'required'  => 'Slug Field can\'t be empty',
+            'unique'    => 'Slug must be unique.',
             'min'       => 'Slug must containt at at least 8 characters.', 
             'max'       => 'Slug can\'t contain more then 30 characters.'
+        ],
+        'key'           => [
+            'max'       => 'Key can\'t contain more than 30 characters', 
+            'min'       => 'Key must contain at least 5 characters.', 
+            'unique'    => 'Key must be unique.'
+        ],
+        'value'         => [
+            'max'       => 'Key can\'t contain more than 15 characters.'
         ]
     ],
 

@@ -11,7 +11,7 @@ use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\Cast\Object_;
+use Illuminate\Validation\Rule;
 use stdClass;
 
 class RestaurantController extends Controller
@@ -297,7 +297,12 @@ class RestaurantController extends Controller
 
         $validator = Validator::make($request -> all(),
             [
-                'slug' => ['required', 'min:8', 'max:30']
+                'slug' => [
+                    'required', 
+                    Rule::unique('restaurants', 'slug') -> ignore($slug, 'slug'), 
+                    'min:8', 
+                    'max:30'
+                ]
             ],
             [],
             []  

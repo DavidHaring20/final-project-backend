@@ -34,8 +34,8 @@ class StyleMasterController extends Controller
     public function store(Request $request) {
         $validator = Validator::make($request->all(),
             [
-                'key'   => ['max:50', 'string', 'unique:style_default_property_values'],
-                'value' => ['max:50', 'string']
+                'key'   => ['max:30', 'min:5', 'unique:style_default_property_values,key'],
+                'value' => ['max:15']
             ],
             [],
             []
@@ -44,7 +44,7 @@ class StyleMasterController extends Controller
         if ($validator -> fails()) {
             return response() -> json(
                 [
-                    'message' => 'Error. Please check input.'
+                    'errorMessage' => $validator -> messages()
                 ]
             );
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Language;
 use App\Models\Restaurant;
+use App\Models\RestaurantTranslation;
 use App\Models\Style;
 use App\Models\StyleMaster;
 use App\Models\User;
@@ -253,36 +254,19 @@ class RestaurantController extends Controller
 
     public function displayInfoForEditingSlug() {
         // Gather all data
-        $users = User::all();
-        $restaurants = Restaurant::all();
-        $restaurantTranslations = Restaurant::with('translations') -> get();
+        $usernames = User::orderBy('id') -> get('email');
+        $restaurantSlugs = Restaurant::orderBy('id') -> get('slug');
+        $restaurantNames = RestaurantTranslation::orderBy('id') -> where('language_code', 'hr') -> get('name');
 
-        // Create arrays
-        $usernames = array();
-        $restaurantSlugs = array();
-        $restaurantNames = array();
         $dataObjects = array();
-        
-        // Take from all tables into arrays only what is needed
-        foreach ($users as $user) {
-            $usernames[] = $user -> email;
-        }
-
-        foreach ($restaurants as $restaurant) {
-            $restaurantSlugs[] = $restaurant -> slug;
-        }
-
-        foreach ($restaurantTranslations as $restaurantTranslation) {
-            $restaurantNames[] = $restaurantTranslation -> translations[0] -> name;
-        }
 
         // Put everything into same object
         for ($i = 0; $i < sizeof($usernames); $i++) {
             $dataObject = new stdClass;
             $dataObject -> index = $i; 
-            $dataObject -> username = $usernames[$i];
-            $dataObject -> slug = $restaurantSlugs[$i];
-            $dataObject -> restaurantName = $restaurantNames[$i];
+            $dataObject -> username = $usernames[$i] -> email;
+            $dataObject -> slug = $restaurantSlugs[$i] -> slug;
+            $dataObject -> restaurantName = $restaurantNames[$i] -> name;
 
             array_push($dataObjects, $dataObject);
         }

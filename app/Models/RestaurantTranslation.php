@@ -13,6 +13,9 @@ class RestaurantTranslation extends Model
     ];
 
     public $timestamps = false;
+    public $incrementing = true;
+    protected $table = 'restaurant_translations';
+    protected $primaryKey = 'id';
 
     public function restaurant() {
         return $this->belongsTo('App\Restaurant');

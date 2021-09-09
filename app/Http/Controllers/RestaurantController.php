@@ -11,8 +11,8 @@ use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-use function PHPSTORM_META\type;
+use PhpParser\Node\Expr\Cast\Object_;
+use stdClass;
 
 class RestaurantController extends Controller
 {
@@ -249,5 +249,81 @@ class RestaurantController extends Controller
                 'error' => 'Something went wrong.'
             ]);
         }
+    }
+
+    public function displayInfoForEditingSlug() {
+        // Gather all data
+        $users = User::all();
+        $restaurants = Restaurant::all();
+        $restaurantTranslations = Restaurant::with('translations') -> get();
+
+        // Create arrays
+        $usernames = array();
+        $restaurantSlugs = array();
+        $restaurantNames = array();
+        $dataObjects = array();
+        
+        // Take from all tables into arrays only what is needed
+        foreach ($users as $user) {
+            $usernames[] = $user -> email;
+        }
+
+        foreach ($restaurants as $restaurant) {
+            $restaurantSlugs[] = $restaurant -> slug;
+        }
+
+        foreach ($restaurantTranslations as $restaurantTranslation) {
+            $restaurantNames[] = $restaurantTranslation -> translations[0] -> name;
+        }
+
+        // Put everything into same object
+        for ($i = 0; $i < sizeof($usernames); $i++) {
+            $dataObject = new stdClass;
+            $dataObject -> index = $i; 
+            $dataObject -> username = $usernames[$i];
+            $dataObject -> slug = $restaurantSlugs[$i];
+            $dataObject -> restaurantName = $restaurantNames[$i];
+
+            array_push($dataObjects, $dataObject);
+        }
+
+        // Return that object
+        return response() -> json([
+            'dataObjects'   => $dataObjects
+        ]);
+    }
+
+    public function editSlug(Request $request, $slug) {
+
+        $validator = Validator::make($request -> all(),
+            [
+                'slug' => ['required', 'min:8', 'max:30']
+            ],
+            [],
+            []  
+        );
+
+        if ($validator -> fails()) {
+            return response() -> json(
+                [
+                    'errorMessage' => $validator -> messages()
+                ]
+            );
+        }
+
+        $data = $validator -> valid();
+
+        $restaurant = Restaurant::where('slug', '=', $slug) -> firstOrFail();
+
+        $restaurant -> slug = $data['slug'];
+
+        $restaurant -> save();
+
+        return response() -> json(
+            [
+                'updatedSlug'   => $restaurant -> slug,
+                'restaurant'    => $restaurant
+            ]
+        ); 
     }
 }

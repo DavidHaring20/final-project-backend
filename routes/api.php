@@ -14,6 +14,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StylePropertyController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StyleMasterController;
+use App\Models\Restaurant;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,9 @@ Route::get('/delete/restaurant/{id}', [RestaurantController::class, 'destroy']);
 Route::post('/restaurant/new', [RestaurantController::class, 'store']);
 Route::post('/restaurant/{id}/edit-footer', [RestaurantController::class, 'editFooter']);
 Route::patch('/styles/select/{id}', [RestaurantController::class, 'select']);
+// Restaurant's slug
+Route::get('/restaurantsInfoForEditingSlug', [RestaurantController::class, 'displayInfoForEditingSlug']);
+Route::patch('/editSlug/{slug}', [RestaurantController::class, 'editSlug']);
 
 //Category
 Route::post('/restaurant/{id}/category', [CategoryController::class, 'store']);

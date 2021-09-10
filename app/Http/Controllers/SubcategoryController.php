@@ -22,11 +22,15 @@ class SubcategoryController extends Controller
             $category = Category::findOrFail($id);
             $translations = collect(json_decode($request->translations));
 
+            $subcategories = $category -> subcategories;
+            $numberOfSubcategories = sizeof($subcategories);
+            $position = $numberOfSubcategories + 1;
+
             try {
                 DB::beginTransaction();
 
                 $newSubcategory = $category->subcategories()->create([
-                    'position' => 1,
+                    'position' => $position,
                 ]);
 
                 foreach ($translations as $language_code => $name) {

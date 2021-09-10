@@ -28,11 +28,16 @@ class ItemController extends Controller
             $descriptions = collect(json_decode($request->descriptions));
             $amounts = collect(json_decode($request->amounts));
 
+            // Get number of Items from DB and increment by 1 to get new item's position
+            $items = $subcategory -> items;
+            $numberOfItems = sizeof($items);
+            $position = $numberOfItems + 1;
+
             try {
                 DB::beginTransaction();
 
                 $newItem = $subcategory->items()->create([
-                    'position' => 1,
+                    'position' => $position,
                     'image_url' => ''
                 ]);
 

@@ -101,6 +101,11 @@ class RestaurantController extends Controller
             $languages = collect(json_decode($request->languages));
             $userId = intval(json_decode($request -> userId));
 
+            //Restaurant position 
+            $restaurants = Restaurant::where('user_id', $userId)->get();
+            $numberOfRestaurants = sizeOf($restaurants);
+            $position = $numberOfRestaurants + 1;
+
             // Create slug
             $slug = $names['Hrvatski'];
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
@@ -111,7 +116,7 @@ class RestaurantController extends Controller
             if($currency) {
                 $newRestaurant = Restaurant::create(
                     [
-                        'position'  => 1,
+                        'position'  => $position,
                         'currency'  => $currency,
                         'slug'      => $slug,
                         'user_id'   => $userId

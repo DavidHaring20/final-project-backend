@@ -25,8 +25,12 @@ class CategoryController extends Controller
             try {
                 DB::beginTransaction();
 
+                $categories = $restaurant->categories;
+                $numberOfCategories = sizeof($categories);
+                $position = $numberOfCategories + 1;
+
                 $newCategory = $restaurant->categories()->create([
-                    'position' => 1,
+                    'position' => $position,
                 ]);
 
                 foreach ($translations as $language_code => $name) {

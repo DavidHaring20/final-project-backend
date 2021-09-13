@@ -13,6 +13,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StylePropertyController;
 use App\Http\Controllers\SocialController;
+use App\Http\Controllers\SortDragDropController;
 use App\Http\Controllers\StyleMasterController;
 use App\Models\Restaurant;
 
@@ -30,6 +31,9 @@ use App\Models\Restaurant;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Drag&Drop
+Route::patch('/SortDragAndDrop', [SortDragDropController::class, 'update']);
 
 // Login
 Route::post('/login/e-mail', [LogInController::class, 'requestVerificationCode']);

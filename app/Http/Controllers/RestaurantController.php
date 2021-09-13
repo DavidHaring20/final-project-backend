@@ -57,6 +57,13 @@ class RestaurantController extends Controller
             'categories.subcategories.items.amounts.translations'
             )->where('slug', $slug)->firstOrFail();
 
+        foreach($restaurant -> categories as $category) {
+            foreach($category -> subcategories as $subcategory) {
+                $array = collect($subcategory -> items)->sortBy('position')->toArray();
+                $subcategory -> items = $array;
+            }
+        }
+
         return response()->json(
             [
                 'data' =>

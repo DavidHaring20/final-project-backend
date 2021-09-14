@@ -34,6 +34,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Drag&Drop
 Route::patch('/SortDragAndDrop', [SortDragDropController::class, 'update']);
+Route::patch('/decrementCategoryPosition', [SortDragDropController::class, 'decrementCategoryPosition']);
+Route::patch('/incrementCategoryPosition', [SortDragDropController::class, 'incrementCategoryPosition']);
 
 // Login
 Route::post('/login/e-mail', [LogInController::class, 'requestVerificationCode']);

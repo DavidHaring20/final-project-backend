@@ -8,21 +8,27 @@ use App\Models\RestaurantTranslation;
 use App\Models\Style;
 use App\Models\StyleMaster;
 use App\Models\User;
+use Barryvdh\Reflection\DocBlock\Type\Collection;
 use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use PhpParser\ErrorHandler\Collecting;
+use PhpParser\Node\Expr\Cast\Object_;
 use stdClass;
 
 class RestaurantController extends Controller
 {
     public function show($id) {
-
-        $restaurant = Restaurant::with(
+        \DB::enableQueryLog();
+        $restaurant = Restaurant::with([
             'translations',
             'languages',
-            'categories',
+            'categories' => function ($query) {
+                $query
+                    ->orderBy('position');
+            },
             'categories.translations',
             'categories.subcategories',
             'categories.subcategories.translations',
@@ -30,8 +36,8 @@ class RestaurantController extends Controller
             'categories.subcategories.items.translations',
             'categories.subcategories.items.amounts',
             'categories.subcategories.items.amounts.translations'
-            )->find($id);
-
+            ])->find($id);
+        
         return response()->json(
             [
                 'data' =>
@@ -56,13 +62,6 @@ class RestaurantController extends Controller
             'categories.subcategories.items.amounts',
             'categories.subcategories.items.amounts.translations'
             )->where('slug', $slug)->firstOrFail();
-
-        foreach($restaurant -> categories as $category) {
-            foreach($category -> subcategories as $subcategory) {
-                $array = collect($subcategory -> items)->sortBy('position')->toArray();
-                $subcategory -> items = $array;
-            }
-        }
 
         return response()->json(
             [

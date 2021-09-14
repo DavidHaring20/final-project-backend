@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Subcategory;
 use Validator;
 
 class SortDragDropController extends Controller
@@ -60,7 +61,7 @@ class SortDragDropController extends Controller
                 'categoryId' => 'required'
             ],
             [],
-            [],
+            []
         );
 
         if ($validator -> fails()) {
@@ -151,7 +152,105 @@ class SortDragDropController extends Controller
         );
     }
 
-    public function incrementSubcategoryPosition() {}
+    public function incrementSubcategoryPosition(Request $request) {
+        $validator = Validator::make(
+            $request -> all(),
+            [
+                'subcategoryId' => 'required'
+            ],
+            [],
+            []
+        );
 
-    public function decrementSubcategoryPosition() {}
+        if ($validator -> fails()) {
+            return response() -> json(
+                [
+                    'errorMessage' => 'Subcategory ID is required.'
+                ]
+            ); 
+        }
+
+        // Get Data from Validator
+        $data = $validator -> valid();
+        $subcategoryId = $data['subcategoryId'];
+
+        // Get Current Subcategory, Increment and Save it's Position
+        $subcategoryCurrent = Subcategory::findOrFail($subcategoryId);
+        $subcategoryCurrent -> position += 1;
+        $subcategoryCurrent -> save();
+
+        // Get Id of Category that Current Subcategory belongs to
+        $categoryId = $subcategoryCurrent -> category -> id;
+
+        // Get position of Current Subcategory
+        $subcategoryCurrentPosition = $subcategoryCurrent -> position;
+
+        // Get Next Subcategory, Decrement it's position and save it
+        $subcategoryNext = Subcategory::where('position', $subcategoryCurrentPosition)
+                                        -> where('category_id', $categoryId)
+                                        -> first();
+
+        $subcategoryNext -> position -= 1;
+        $subcategoryNext -> save();
+
+        return response() -> json(
+            [
+                'subcategoryCurrent' => $subcategoryCurrent, 
+                'subcategoryNext' => $subcategoryNext,
+                'subcategoryCurrentPosition' => $subcategoryCurrentPosition, 
+                'subcategoryNextPosition' => $subcategoryNext -> position
+            ]
+        );
+    }
+
+    public function decrementSubcategoryPosition(Request $request) {
+        $validator = Validator::make($request -> all(),
+            [
+                'subcategoryId' => 'required'
+            ],
+            [],
+            [],
+        );
+
+        if ($validator -> fails()) {
+            return response() -> json(
+                [
+                    'errorMessage' => 'Subcategory ID is required.'
+                ]
+            ); 
+        }
+
+        // Get Data from Validator
+        $data = $validator -> valid();
+        $subcategoryId = $data['subcategoryId'];
+
+        // Get Current Subcategory, Decrement and Save it's Position
+        $subcategoryCurrent = Subcategory::findOrFail($subcategoryId);
+        $subcategoryCurrent -> position -= 1;
+        $subcategoryCurrent -> save();
+
+        // Get Id of Category that Current Subcategory belongs to
+        $categoryId = $subcategoryCurrent -> category -> id;
+
+        // Get position of Current Subcategory
+        $subcategoryCurrentPosition = $subcategoryCurrent -> position;
+
+        // Get Previous Subcategory, Increment it's position and save it
+        $subcategoryPrevious = Subcategory::where('position', $subcategoryCurrentPosition)
+                                        -> where('category_id', $categoryId)
+                                        -> first();
+
+        $subcategoryPrevious -> position += 1;
+        $subcategoryPrevious -> save();
+
+        return response() -> json(
+            [
+                'subcategoryCurrent' => $subcategoryCurrent,
+                'subcategoryPrevious' => $subcategoryPrevious,
+                'subcategoryCurrentPosition' => $subcategoryCurrentPosition,
+                'subcategoryPreviousPosition' => $subcategoryPrevious -> position,
+            ]
+        );
+
+    }
 }

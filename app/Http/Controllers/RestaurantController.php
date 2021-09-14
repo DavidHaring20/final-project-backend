@@ -30,7 +30,10 @@ class RestaurantController extends Controller
                     ->orderBy('position');
             },
             'categories.translations',
-            'categories.subcategories',
+            'categories.subcategories' => function($query) {
+                $query
+                    -> orderBy('position');
+            },
             'categories.subcategories.translations',
             'categories.subcategories.items',
             'categories.subcategories.items.translations',

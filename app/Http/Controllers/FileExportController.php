@@ -161,18 +161,24 @@ class FileExportController extends Controller
 
     public function FileExport($id) {
 
-        $restaurant = Restaurant::with(
+        $restaurant = Restaurant::with([
             'translations',
             'languages',
-            'categories',
+            'categories' => function ($query) {
+                $query
+                    ->orderBy('position');
+            },
             'categories.translations',
-            'categories.subcategories',
+            'categories.subcategories' => function($query) {
+                $query
+                    -> orderBy('position');
+            },
             'categories.subcategories.translations',
             'categories.subcategories.items',
             'categories.subcategories.items.translations',
             'categories.subcategories.items.amounts',
             'categories.subcategories.items.amounts.translations'
-            )->find($id);
+        ])->find($id);
 
         $json = $this->toJson($restaurant);
         return $json;
@@ -180,18 +186,24 @@ class FileExportController extends Controller
 
     public function ExportBySlug($slug) {
 
-        $restaurant = Restaurant::with(
+        $restaurant = Restaurant::with([
             'translations',
             'languages',
-            'categories',
+            'categories' => function ($query) {
+                $query
+                    ->orderBy('position');
+            },
             'categories.translations',
-            'categories.subcategories',
+            'categories.subcategories' => function($query) {
+                $query
+                    -> orderBy('position');
+            },
             'categories.subcategories.translations',
             'categories.subcategories.items',
             'categories.subcategories.items.translations',
             'categories.subcategories.items.amounts',
             'categories.subcategories.items.amounts.translations'
-            )->where('slug', $slug)->firstOrFail();
+        ])->where('slug', $slug)->firstOrFail();
 
         $json = $this->toJson($restaurant);
         return $json;

@@ -103,23 +103,34 @@ class LogInController extends Controller
                 [
                     'email'     => $email,
                     'passcode'  => $passcode,
-                    'role'      => 'role'
+                    'role'      => 'user',
+                    'status'    => 'inactive'
                 ]
-            );    
-        }        
+            );
+        }     
 
         // SEND AN EMAIL WITH TEXT AND PASSCODE
         // CREATE NEW USER AND STORE EMAIL AND PASSCODE
         try {
-            Mail::to($email)->send(new EmailSubmitted($passcode));
-            
-            return response()->json(
-                [
-                    'user' => $user,
-                    'statusCode' => 200,
-                    'message' => 'Verifikacijski kod je poslan. Molim provjerite e-mail'
-                ]
-            );
+            //Mail::to($email)->send(new EmailSubmitted($passcode));
+            if ($user -> status == 'active') {
+                return response() -> json(
+                    [
+                        'user' => $user,
+                        'statusCode' => 200,
+                        'authenticated' => true
+                    ]
+                );
+            } else {
+                return response()->json(
+                    [
+                        'user' => $user,
+                        'statusCode' => 200,
+                        // 'message' => 'Verifikacijski kod je poslan. Molim provjerite e-mail'
+                        'message' => 'Requested login. You are currently inactive.'
+                    ]
+                );
+            }
         } catch (Error $error) {
 
             return response()->json(
@@ -132,45 +143,46 @@ class LogInController extends Controller
         }
     }
 
-    public function authenticate(Request $request) {
-        // GET EMAIL AND PASSCODE VALUES FROM THE REQUEST
-        $email = $request->input('email');
-        $passcode = $request->input('passcode');
+    // This is currently not needed 
+    
+    // public function authenticate(Request $request) {
+    //     // GET EMAIL AND PASSCODE VALUES FROM THE REQUEST
+    //     $email = $request->input('email');
+    //     $passcode = $request->input('passcode');
 
-        // CHECK AGAINST THE DATABASE
-        try {
-            $user = User::where('email', '=' ,$email)
-                ->where('passcode', '=', $passcode)
-                ->firstOrFail();  
+    //     // CHECK AGAINST THE DATABASE
+    //     try {
+    //         $user = User::where('email', '=' ,$email)
+    //             ->where('passcode', '=', $passcode)
+    //             ->firstOrFail();  
 
-            // HASH PASSCODE TO GET auth_token FOR SESSION
-            $authToken = Hash::make($passcode, [
-                'rounds' => 12
-            ]);
+    //         // HASH PASSCODE TO GET auth_token FOR SESSION
+    //         $authToken = Hash::make($passcode, [
+    //             'rounds' => 12
+    //         ]);
 
-            return response()->json(
-                [
-                    'statusCode'    => 200,
-                    'authenticated' => true,
-                    'user'          => $user,
-                    'authToken'     => $authToken
-                ]
-            );
-        } catch (ModelNotFoundException $error) {
-            return response()->json(
-                [
-                    'statusCode' => 400,
-                    'authenticated' => 'false',
-                    'message' => 'Krivo unesen e-mail ili passcode. Molim pokušajte ponovo.'
-                ], 
-            );
-        } catch (Exception $error) {
-            return response()->json(
-                [
-                    'message' => 'Error'
-                ], 500
-            );
-        }
-
-    }
+    //         return response()->json(
+    //             [
+    //                 'statusCode'    => 200,
+    //                 'authenticated' => true,
+    //                 'user'          => $user,
+    //                 'authToken'     => $authToken
+    //             ]
+    //         );
+    //     } catch (ModelNotFoundException $error) {
+    //         return response()->json(
+    //             [
+    //                 'statusCode' => 400,
+    //                 'authenticated' => 'false',
+    //                 'message' => 'Krivo unesen e-mail ili passcode. Molim pokušajte ponovo.'
+    //             ], 
+    //         );
+    //     } catch (Exception $error) {
+    //         return response()->json(
+    //             [
+    //                 'message' => 'Error'
+    //             ], 500
+    //         );
+    //     }
+    // }
 }

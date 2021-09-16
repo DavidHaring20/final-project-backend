@@ -41,7 +41,7 @@ Route::patch('/decrementSubcategoryPosition', [SortDragDropController::class, 'd
 
 // Login
 Route::post('/login/e-mail', [LogInController::class, 'requestVerificationCode']);
-// Route::post('/login/e-mailAndPassword', [LogInController::class, 'authenticate']);
+Route::post('/login/e-mailAndPassword', [LogInController::class, 'authenticate']);
 
 // Export and importing JSON file
 Route::get('/export-json/restaurant/{id}', [FileExportController::class, 'FileExport']);

@@ -7,6 +7,7 @@ use App\Http\Controllers\LogInController;
 use App\Http\Controllers\FileExportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\ItemController;
@@ -31,6 +32,9 @@ use App\Models\Restaurant;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// File
+Route::post('/getPresignedUrl', [FileController::class, 'getPresignedUrl']);
 
 // Drag&Drop
 Route::patch('/SortDragAndDrop', [SortDragDropController::class, 'update']);

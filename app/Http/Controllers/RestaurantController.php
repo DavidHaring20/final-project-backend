@@ -93,7 +93,7 @@ class RestaurantController extends Controller
 
         $validatedData = $request->validate([
             'currency'  => ['required'],
-            'names'     => ['required'],
+            'name'     => ['required'],
             'footers'   => ['required'],
             'languages' => ['required'],
             'userId'    => ['required']
@@ -103,8 +103,8 @@ class RestaurantController extends Controller
         // Proceed if data all data is provided
         if($validatedData) {
             // Collect and transform data in using 'json_decode'
-            $currency = $request->currency;
-            $names = collect(json_decode($request->names));
+            $currency = $request -> currency;
+            $name = $request -> name;
             $footers = collect(json_decode($request->footers));
             $languages = collect(json_decode($request->languages));
             $userId = intval(json_decode($request -> userId));
@@ -115,7 +115,7 @@ class RestaurantController extends Controller
             $position = $numberOfRestaurants + 1;
 
             // Create slug
-            $slug = $names['Hrvatski'];
+            $slug = $name;
             $slug = strtolower(preg_replace('/\s+/', '-', $slug));
 
             // Create restaurant with it's languages and translations for that languages
@@ -137,15 +137,15 @@ class RestaurantController extends Controller
                     $newRestaurant->languages()->attach($existingLanguage);
                 }
 
-                foreach($names as $languageName => $name) {
-                    if($name) {
-                        $existingLanguage = Language::where('language_name', $languageName)->firstOrFail();
+                foreach($footers as $footerKey => $footerName) {
+                    if($footerKey) {
+                        $existingLanguage = Language::where('language_name', $footerKey)->firstOrFail();
                         $newRestaurant->translations()->create(
                             [
                                 'language_code' => $existingLanguage->language_code,
                                 'is_default' => false,
                                 'name' => $name,
-                                'footer' => $footers[$languageName]
+                                'footer' => $footers[$footerKey]
                             ]
                         );
                     }

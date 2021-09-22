@@ -265,7 +265,39 @@ class RestaurantController extends Controller
         }
     }
 
-    // public function editRestaurantName()
+    public function editRestaurantName(Request $request, $restaurantId) {
+
+        // Validate Request data
+        $validator = Validator::make(
+            $request -> all(),
+            [
+                'updatedRestaurantName' => 'required', 'string', 'min:5', 'max:30'
+            ],
+            [],
+            []
+        );
+
+        if ($validator -> fails()) {
+            return response() -> json(
+                [
+                    'errorMessage' => 'Restaurant Name is missing.'
+                ]
+            );
+        }
+
+        $data = $validator -> valid();
+        $updatedRestaurantName = $data['updatedRestaurantName'];
+
+        // Get all Restaurant Translations that belong to
+        $updatedRows = RestaurantTranslation::where('restaurant_id', $restaurantId) -> update(['name' => $updatedRestaurantName]);
+
+        return response() -> json(
+            [
+                'updatedRows' => $updatedRows
+            ]
+        ); 
+
+    }
 
     public function displayInfoForEditingSlug() {
         // Gather all data

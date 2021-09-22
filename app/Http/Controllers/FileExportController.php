@@ -148,7 +148,7 @@ class FileExportController extends Controller
 
         $json = $data['restaurant'][0] = [
                 'name' => $restaurant->translations[0]->name,
-                'socials' => $social,
+                'social' => $social,
                 'style' => $style,
                 'currency' => $restaurant->currency,
                 'languages' => $languages_array,

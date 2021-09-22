@@ -21,7 +21,6 @@ use stdClass;
 class RestaurantController extends Controller
 {
     public function show($id) {
-        \DB::enableQueryLog();
         $restaurant = Restaurant::with([
             'translations',
             'languages',
@@ -265,6 +264,8 @@ class RestaurantController extends Controller
             ]);
         }
     }
+
+    // public function editRestaurantName()
 
     public function displayInfoForEditingSlug() {
         // Gather all data

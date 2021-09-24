@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Aws\S3\S3Client;
 use Illuminate\Http\Request;
 use Storage;
-use Str;
 use Validator;
 
 class FileController extends Controller
@@ -15,6 +15,7 @@ class FileController extends Controller
     //         $request -> all(),
     //         [
     //             'userId' => 'required',
+    //             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
     //         ],
     //         [],
     //         []
@@ -29,45 +30,83 @@ class FileController extends Controller
     //     }
 
     //     $data = $validator -> valid();
-    //     User::findOrFail($data['userId']);
-    //     $path = 'pictures/'.Str::random(9);
+    //     $userId = $data['userId'];
+    //     User::findOrFail($userId);
 
+    //     $s3Client = new S3Client([
+    //         'credentials' => [
+    //             'key' => $_ENV['KEY_MINIO'],
+    //             'secret' => $_ENV['SECRET_MINIO']
+    //         ],
+    //         'region' => $_ENV['REGION_MINIO'],
+    //         'version' => $_ENV['VERSION_MINIO'],
+    //         'bucket_endpoint' => false,
+    //         'use_path_style_endpoint' => true,
+    //         'endpoint' => $_ENV['ENDPOINT_MINIO']
+    //     ]);
 
-    //     $presignedUrl = Storage::disk('minio') -> temporaryUrl($path, '+5 minutes');
+    //     $putCommand = $s3Client -> getCommand('PutObject', [
+    //         'Bucket' => $_ENV['BUCKET_MINIO'],
+    //         'Key' => 'radnom',
+    //         // 'SourceFile' => $request -> image, 
+    //         // 'Content-Type' => $request -> content_type
+    //     ]);
+
+    //     $presignedRequest = $s3Client-> createPresignedRequest($putCommand, '+20 minutes');
+    //     $presignedUrl = (string) $presignedRequest -> getUri();
+
+    //     // $path = 'photos/shrek.jpg';
+    //     // $signedUrl = Storage::disk('minio') -> temporaryUrl($path, now() -> addMinutes(10));
 
     //     return response() -> json(
     //         [
+    //             'presignedRequest' => $presignedRequest,
     //             'presignedUrl' => $presignedUrl
     //         ]
     //     );
     // }
 
-    public function putPicture(Request $request) {
+    // public function putPicture(Request $request) {
 
-        $validator = Validator::make($request -> all(), 
-            [
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ],
-            [],
-            []
-        );
+    //     $validator = Validator::make($request -> all(), 
+    //         [
+    //             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //             'url' => 'required'
+    //         ],
+    //         [],
+    //         []
+    //     );
 
-        if ($validator -> fails()) {
-            return response() -> json(
-                [
-                    'errorMessage' => 'Error'
-                ]
-            ); 
-        }
+    //     if ($validator -> fails()) {
+    //         return response() -> json(
+    //             [
+    //                 'errorMessage' => 'Error'
+    //             ]
+    //         ); 
+    //     }
 
-        $picture = $request -> image;
-         
-        $path = Storage::disk('minio') -> putFile('photos', $picture);
+    //     $s3Client = new S3Client([
+    //         'credentials' => [
+    //             'key' => $_ENV['KEY_MINIO'],
+    //             'secret' => $_ENV['SECRET_MINIO']
+    //         ],
+    //         'region' => $_ENV['REGION_MINIO'],
+    //         'version' => $_ENV['VERSION_MINIO'],
+    //         'bucket_endpoint' => false,
+    //         'use_path_style_endpoint' => true,
+    //         'endpoint' => $_ENV['ENDPOINT_MINIO']
+    //     ]);
 
-        return response() -> json(
-            [
-                'path' => $path
-            ]
-        );
-    }
+    //     $picture = $request -> image;
+        
+    //     $data = $validator -> valid();
+    //     $url = $data['url'];        
+    //     $path = Storage::disk('minio') -> putFile($url, $picture);
+
+    //     return response() -> json(
+    //         [
+    //             'path' => $path
+    //         ]
+    //     );
+    // }
 }

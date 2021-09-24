@@ -8,14 +8,11 @@ use App\Models\RestaurantTranslation;
 use App\Models\Style;
 use App\Models\StyleMaster;
 use App\Models\User;
-use Barryvdh\Reflection\DocBlock\Type\Collection;
 use Validator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use PhpParser\ErrorHandler\Collecting;
-use PhpParser\Node\Expr\Cast\Object_;
 use stdClass;
 
 class RestaurantController extends Controller
@@ -108,6 +105,17 @@ class RestaurantController extends Controller
             $footers = collect(json_decode($request->footers));
             $languages = collect(json_decode($request->languages));
             $userId = intval(json_decode($request -> userId));
+
+            // Check if there is already restaurant with that name
+            $restaurantNames= RestaurantTranslation::where('name', $name) -> get();
+            
+            if (sizeOf($restaurantNames) > 0) {
+                return response() -> json(
+                    [
+                        'error' => 'Restaurant with that name already exists.'
+                    ]
+                );
+            }
 
             //Restaurant position 
             $restaurants = Restaurant::where('user_id', $userId)->get();
@@ -266,7 +274,6 @@ class RestaurantController extends Controller
     }
 
     public function editRestaurantName(Request $request, $restaurantId) {
-
         // Validate Request data
         $validator = Validator::make(
             $request -> all(),
@@ -295,8 +302,7 @@ class RestaurantController extends Controller
             [
                 'updatedRows' => $updatedRows
             ]
-        ); 
-
+        );
     }
 
     public function displayInfoForEditingSlug() {

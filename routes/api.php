@@ -35,7 +35,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // File
 // Route::post('/getPresignedUrl', [FileController::class, 'getPresignedUrl']);
-Route::post('/putPicture', [FileController::class, 'putPicture']);
+// Route::post('/putPicture', [FileController::class, 'putPicture']);
 
 // Drag&Drop
 Route::patch('/SortDragAndDrop', [SortDragDropController::class, 'update']);
@@ -68,7 +68,6 @@ Route::get('/delete/restaurant/{id}', [RestaurantController::class, 'destroy']);
 Route::post('/restaurant/new', [RestaurantController::class, 'store']);
 Route::post('/restaurant/{id}/edit-footer', [RestaurantController::class, 'editFooter']);
 Route::patch('/styles/select/{id}', [RestaurantController::class, 'select']);
-Route::patch('/editRestaurantName/{restaurantId}',[RestaurantController::class, 'editRestaurantName'] );
 // Restaurant's slug
 Route::get('/restaurantsInfoForEditingSlug', [RestaurantController::class, 'displayInfoForEditingSlug']);
 Route::patch('/editSlug/{slug}', [RestaurantController::class, 'editSlug']);

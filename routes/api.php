@@ -34,8 +34,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // File
-// Route::post('/getPresignedUrl', [FileController::class, 'getPresignedUrl']);
-// Route::post('/putPicture', [FileController::class, 'putPicture']);
+Route::post('/getPresignedUrl', [FileController::class, 'getPresignedUrl']);
 
 // Drag&Drop
 Route::patch('/SortDragAndDrop', [SortDragDropController::class, 'update']);

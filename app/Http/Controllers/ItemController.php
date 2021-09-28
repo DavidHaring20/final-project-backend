@@ -57,7 +57,7 @@ class ItemController extends Controller
                 }
 
                 //Add amounts
-
+                // Check if the prices are null/empty
                 foreach($amounts as $amount) {
                     if ($amount->price == "" || $amount->price == null) {
                         DB::rollBack();
@@ -66,6 +66,24 @@ class ItemController extends Controller
                                 'message' => 'Price can\'t be empty !'
                             ],
                         );
+                    } elseif ($amount->price > 9999.99) {       // Check if the price is greater than what DB permits
+                        return response() -> json(
+                            [
+                                'message' => 'Price can\'t be greater than 9999.99'
+                            ],
+                        ); 
+                    } elseif ($amount->price < 0.01) {          // Check if the price is lesser than what DB permits
+                        return response() -> json(
+                            [
+                                'message' => 'Price can\'t be lesser than 0.01'
+                            ],
+                        ); 
+                    } elseif (strpos($amount->price, ',')) {    // Check if the price contains coma (,)
+                        return response() -> json(
+                            [
+                                'message' => 'Price can\'t contain ",". Instead of it use "."'
+                            ],
+                        ); 
                     }
 
                     $newAmount = $newItem->amounts()->create([
@@ -142,6 +160,24 @@ class ItemController extends Controller
                             'message' => 'Price can\'t be empty !'
                         ],
                     );
+                } elseif ($amount['price'] > 9999.99) {       // Check if the price is greater than what DB permits
+                    return response() -> json(
+                        [
+                            'message' => 'Price can\'t be greater than 9999.99'
+                        ],
+                    ); 
+                } elseif ($amount['price'] < 0.01) {          // Check if the price is lesser than what DB permits
+                    return response() -> json(
+                        [
+                            'message' => 'Price can\'t be lesser than 0.01'
+                        ],
+                    ); 
+                } elseif (strpos($amount['price'], ',')) {    // Check if the price contains coma (,)
+                    return response() -> json(
+                        [
+                            'message' => 'Price can\'t contain ",". Instead of it use "."'
+                        ],
+                    ); 
                 }
 
                 $updatedAmount = $item->amounts()->updateOrCreate(

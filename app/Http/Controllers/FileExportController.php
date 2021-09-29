@@ -11,12 +11,12 @@ class FileExportController extends Controller
     public function toJson($restaurant) {
         $social = new Social;
 
-        $social -> facebook_url = $restaurant -> social -> facebook_url;
-        $social -> foursquare_url = $restaurant -> social -> foursquare_url;
-        $social -> google_url = $restaurant -> social -> google_url;
-        $social -> instagram_url = $restaurant -> social -> instagram_url;
-        $social -> tripadvisor_url = $restaurant -> social -> tripadvisor_url;
-        $social -> twitter_url = $restaurant -> social -> twitter_url;
+        $social -> facebook = $restaurant -> social -> facebook_url;
+        $social -> foursquare = $restaurant -> social -> foursquare_url;
+        $social -> google = $restaurant -> social -> google_url;
+        $social -> instagram = $restaurant -> social -> instagram_url;
+        $social -> tripadvisor = $restaurant -> social -> tripadvisor_url;
+        $social -> twitter = $restaurant -> social -> twitter_url;
 
         // CODE FOR GETTING THE STYLE OBJECT FROM OTHER TABLE
         $styles = $restaurant -> styles;

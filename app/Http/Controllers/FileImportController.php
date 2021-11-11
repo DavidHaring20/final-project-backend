@@ -28,7 +28,7 @@ class FileImportController extends Controller
         if ($validator->fails()) {
             return response()->json(
                 [
-                    'Message' => 'Error occured when importing file. Please try again.'
+                    'errorMessage' => 'Error occured when importing file. Please try again.'
                 ]
             );
         }
@@ -56,7 +56,7 @@ class FileImportController extends Controller
         if (sizeOf($restaurantNames)) {
             return response()->json(
                 [
-                    'message' => 'Restaurant with such name alredy exists, please try another name.'
+                    'errorMessage' => 'Restaurant with such name alredy exists, please try another name.'
                 ]
             );
         }
@@ -111,12 +111,14 @@ class FileImportController extends Controller
         // Save all changes that were done during Transaction
         DB::commit();
 
+        // Get newly created Restaurant
+        $newRestaurant = Restaurant::with('translations')->find($newRestaurant->id);
 
         return response()->json(
             [
-                'userID'    => $userID, 
-                // 'content' => $jsonContent
-                'message'   => 'Restaurant created Successfully.'
+                'userID'        => $userID, 
+                'newRestaurant' => $newRestaurant,
+                'message'       => 'Data imported successfully.'
             ]
         );
     }

@@ -9,13 +9,12 @@ class FileImportController extends Controller
     public function importJSON(Request $request) {
         $file = $request->file;
 
-        $content = file_get_contents($file);
-
-        // print_r($content);
+        $stringContent = file_get_contents($file);
+        $jsonContent = json_decode($stringContent);
 
         return response()->json(
             [
-                'content' => $content
+                'content' => $jsonContent
             ]
         );
     }

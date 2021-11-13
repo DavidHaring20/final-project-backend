@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Language;
 use App\Models\RestaurantTranslation;
+use App\Models\SubcategoriesTranslation;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -158,9 +160,47 @@ class FileImportController extends Controller
                     );
                 }
             }
+
+            // Get Subcategories
+            $restaurantSubcategories = $restaurantCategory->subCategories;
+
+            foreach ($restaurantSubcategories as $restaurantSubcategory) {
+                $subcategoryTranslations = $restaurantSubcategory->name;
+
+                // Get highest position
+                $position = Subcategory::max('position');
+                $subcategory = Subcategory::create(
+                    [
+                        'position' => $position + 1,
+                        'category_id' => $categoryId
+                    ]
+                );
+
+                $subcategoryId = $subcategory->id;
+
+                foreach ($subcategoryTranslations as $subcategoryTranslationsKey => $subcategoryTranslationsValue) {
+                    if ($subcategoryTranslationsValue == "hr") {
+                        SubcategoriesTranslation::create(
+                            [
+                                'language_code'     => $subcategoryTranslationsKey,
+                                'is_default'        => true,
+                                'name'              => $subcategoryTranslationsValue,
+                                'subcategory_id'    => $subcategoryId
+                            ]
+                        );
+                    } else {
+                        SubcategoriesTranslation::create(
+                            [
+                                'language_code'     => $subcategoryTranslationsKey,
+                                'is_default'        => false,
+                                'name'              => $subcategoryTranslationsValue,
+                                'subcategory_id'    => $subcategoryId
+                            ]
+                        );
+                    }
+                }
+            }
         }
-
-
 
         return response()->json(
             [
@@ -168,7 +208,7 @@ class FileImportController extends Controller
                 // 'newRestaurant' => $newRestaurant,
                 'message'       => 'Data imported successfully.',
                 // 'restaurantCategories' => $restaurantCategories,
-                // 'jsonContent'   => $jsonContent
+                'jsonContent'   => $jsonContent
             ]
         );
     }

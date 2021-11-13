@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoriesTranslation;
+use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Language;
 use App\Models\RestaurantTranslation;
@@ -111,14 +113,62 @@ class FileImportController extends Controller
         // Save all changes that were done during Transaction
         DB::commit();
 
-        // Get newly created Restaurant
+        // Get newly created Restaurant and it's ID
         $newRestaurant = Restaurant::with('translations')->find($newRestaurant->id);
+        $newRestaurantId = $newRestaurant->id;
+
+        // Create all Categories, Subcategories and Items from Imported JSON
+        $restaurantCategories = collect($jsonContent->categories);
+
+        // Temporary storage
+        $categoryId = 0;
+
+        foreach ($restaurantCategories as $restaurantCategory) {
+            $categoryTranslations = $restaurantCategory->name;
+
+            // Get highest Position
+            $position = Category::max('position');
+            $category= Category::create(
+                [
+                    'position' => $position + 1,
+                    'restaurant_id' => $newRestaurantId
+                ]
+            );
+
+            $categoryId = $category->id;
+
+            foreach ($categoryTranslations as $categoryTranslationsKey => $categoryTranslationsValue) {
+                if ($categoryTranslationsKey == "hr") {
+                    CategoriesTranslation::create(
+                        [
+                            'language_code' => $categoryTranslationsKey,
+                            'is_default'    => true,
+                            'name'          => $categoryTranslationsValue,
+                            'category_id'   => $categoryId
+                        ]
+                    );
+                } else {
+                    CategoriesTranslation::create(
+                        [
+                            'language_code' => $categoryTranslationsKey,
+                            'is_default'    => false,
+                            'name'          => $categoryTranslationsValue,
+                            'category_id'   => $categoryId
+                        ]
+                    );
+                }
+            }
+        }
+
+
 
         return response()->json(
             [
-                'userID'        => $userID, 
-                'newRestaurant' => $newRestaurant,
-                'message'       => 'Data imported successfully.'
+                // 'userID'        => $userID, 
+                // 'newRestaurant' => $newRestaurant,
+                'message'       => 'Data imported successfully.',
+                // 'restaurantCategories' => $restaurantCategories,
+                // 'jsonContent'   => $jsonContent
             ]
         );
     }

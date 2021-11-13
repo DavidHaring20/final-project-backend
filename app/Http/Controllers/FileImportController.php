@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoriesTranslation;
 use App\Models\Category;
+use App\Models\Item;
+use App\Models\ItemTranslation;
 use App\Models\Restaurant;
 use App\Models\Language;
 use App\Models\RestaurantTranslation;
@@ -73,6 +75,9 @@ class FileImportController extends Controller
         $restaurants = Restaurant::where('user_id', $userID)->get();
         $numberOfRestaurants = sizeOf($restaurants);
         $position = $numberOfRestaurants + 1;
+        $positionTempForCategories = 0;
+        $positionTempForSubcategories = 0;
+        $positionTempForItems = 0;
 
         // Create a Restaurant with Name, Currency, Footer Text and Languages
         DB::beginTransaction();
@@ -129,10 +134,9 @@ class FileImportController extends Controller
             $categoryTranslations = $restaurantCategory->name;
 
             // Get highest Position
-            $position = Category::max('position');
             $category= Category::create(
                 [
-                    'position' => $position + 1,
+                    'position' => $positionTempForCategories,
                     'restaurant_id' => $newRestaurantId
                 ]
             );
@@ -168,10 +172,9 @@ class FileImportController extends Controller
                 $subcategoryTranslations = $restaurantSubcategory->name;
 
                 // Get highest position
-                $position = Subcategory::max('position');
                 $subcategory = Subcategory::create(
                     [
-                        'position' => $position + 1,
+                        'position' => $positionTempForSubcategories,
                         'category_id' => $categoryId
                     ]
                 );
@@ -199,7 +202,74 @@ class FileImportController extends Controller
                         );
                     }
                 }
+
+                // ITEMS
+                $items = $restaurantSubcategory->items;
+                // $items = $itemsArray[0];
+
+                // At each Subcategory, before traversal of Items, this will refresh
+                // Ensuring that Items in each Subcategory go from 0 and so on
+                $positionTempForItems = 0;
+
+                // Traverse all Items in Subcategory
+                foreach ($items as $item) {
+
+                    // Create new Item
+                    $newItem = Item::create(
+                        [
+                            'position'          => $positionTempForItems,
+                            'image_url'         => '',
+                            'subcategory_id'    => $subcategoryId
+                        ]
+                    );
+
+                    // Get new Item ID
+                    $itemID = $newItem->id;
+
+                    // Gather all Data about Item
+                    $titles = $item->title;
+                    $subtitles = $item->subtitles;
+                    $descriptions = $item->description;
+                    $amount = $item->amount;
+
+                    // Arrays to store Data from different foreach loop
+                    $titleKeys = array();
+                    $titleValues = array();
+                    $subtitleValues = array();
+                    $descriptionValues = array();
+
+                    // Create Item Translations from gathered Data
+                    foreach ($titles as $titleKey => $titleValue) {
+                        array_push($titleKeys, $titleKey);
+                        array_push($titleValues, $titleValue);
+                    }
+
+                    foreach ($subtitles as $subtitleKey => $subtitleValue) {
+                        array_push($subtitleValues, $subtitleValue);
+                    }
+
+                    foreach($descriptions as $descriptionKey => $descriptionValue) {
+                        array_push($descriptionValues, $descriptionValue);
+                    }
+
+                    for ($i = 0; $i < sizeof($titleKeys); $i++) {
+                        ItemTranslation::create(
+                            [
+                                'language_code' => $titleKeys[$i],
+                                'is_default'    => false,
+                                'title'         => $titleValues[$i],
+                                'subtitle'      => $subtitleValues[$i],
+                                'description'   => $descriptionValues[$i],
+                                'item_id'       => $itemID
+                            ]
+                        );
+                    }
+                }
+                $positionTempForSubcategories = $positionTempForSubcategories + 1;
+
             }
+
+            $positionTempForCategories = $positionTempForCategories + 1;
         }
 
         return response()->json(

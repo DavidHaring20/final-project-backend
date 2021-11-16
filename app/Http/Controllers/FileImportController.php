@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amount;
+use App\Models\AmountTranslation;
 use App\Models\CategoriesTranslation;
 use App\Models\Category;
 use App\Models\Item;
@@ -78,6 +80,7 @@ class FileImportController extends Controller
         $positionTempForCategories = 0;
         $positionTempForSubcategories = 0;
         $positionTempForItems = 0;
+        $positionTempForItemsAmount = 0;
 
         // Create a Restaurant with Name, Currency, Footer Text and Languages
         DB::beginTransaction();
@@ -230,7 +233,7 @@ class FileImportController extends Controller
                     $titles = $item->title;
                     $subtitles = $item->subtitles;
                     $descriptions = $item->description;
-                    $amount = $item->amount;
+                    $amounts = $item->amount;
 
                     // Arrays to store Data from different foreach loop
                     $titleKeys = array();
@@ -263,6 +266,34 @@ class FileImportController extends Controller
                                 'item_id'       => $itemID
                             ]
                         );
+                    }
+
+                    // Item amounts
+                    foreach ($amounts as $amount) {
+                        // return $amount;
+                        $newAmount = Amount::create(
+                            [
+                                'position'  => $positionTempForItemsAmount,
+                                'price'     => $amount->price,
+                                'item_id'   => $itemID
+                            ]
+                        );
+
+                        $newAmountID = $newAmount->id;
+                        $amountTranslations = $amount->title;
+
+                        foreach ($amountTranslations as $amountTranslationKey => $amountTranslationValue) {
+                            AmountTranslation::create(
+                                [
+                                    'language_code' => $amountTranslationKey, 
+                                    'is_default'    => false,
+                                    'description'   => $amountTranslationValue,
+                                    'amount_id'     => $newAmountID
+                                ]
+                            );
+                        }
+
+                        $positionTempForItemsAmount = $positionTempForItemsAmount + 1;
                     }
                 }
                 $positionTempForSubcategories = $positionTempForSubcategories + 1;

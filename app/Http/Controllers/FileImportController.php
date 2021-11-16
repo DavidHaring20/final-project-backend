@@ -11,6 +11,8 @@ use App\Models\ItemTranslation;
 use App\Models\Restaurant;
 use App\Models\Language;
 use App\Models\RestaurantTranslation;
+use App\Models\SocialNetwork;
+use App\Models\Style;
 use App\Models\SubcategoriesTranslation;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
@@ -55,6 +57,8 @@ class FileImportController extends Controller
         $restaurantCurrency = $jsonContent->currency;
         $restaurantLanguages = $jsonContent->languages;
         $restaurantFooterTexts = collect($jsonContent->footer_text);
+        $restaurantSocials = $jsonContent->social;
+        $restaurantStyleProperties = $jsonContent->style;
 
         // Before creating Restaurant, check if there is already a Restaurant with such name
         // If there isn't - create Restaurant
@@ -96,7 +100,6 @@ class FileImportController extends Controller
             );
         }
 
-        // Until here, it is probably okay
         foreach($restaurantLanguages as $language) {
             $existingLanguage = Language::where('language_code', $language)->firstOrFail();
 
@@ -127,10 +130,35 @@ class FileImportController extends Controller
         $newRestaurant = Restaurant::with('translations')->find($newRestaurant->id);
         $newRestaurantId = $newRestaurant->id;
 
+        // Add Socials to the new Restaurant
+        foreach ($restaurantSocials as $restaurantSocialKey => $restaurantSocialValue) {
+            if ($restaurantSocialValue) {
+                SocialNetwork::create(
+                    [
+                        'name'          => $restaurantSocialKey,
+                        'link'          => $restaurantSocialValue,
+                        'restaurant_id' => $newRestaurantId
+                    ]
+                );
+            }
+        }
+
+        // Add Styles to the new Restaurant
+        foreach ($restaurantStyleProperties as $restaurantStylePropertyKey => $restaurantStylePropertyValue) {
+            Style::create(
+                [
+                    'key'           => $restaurantStylePropertyKey,
+                    'value'         => $restaurantStylePropertyValue,
+                    'restaurant_id' => $newRestaurantId 
+                ]
+            );
+        }
+
         // Create all Categories, Subcategories and Items from Imported JSON
         $restaurantCategories = collect($jsonContent->categories);
 
-        // Temporary storage
+        // Temporary storage for category id outside of the foreach loop. It needs to be stored outside of 
+        // the foreach loop, otherwise it wouldn't overwrite each iteration which will lead to errors.
         $categoryId = 0;
 
         foreach ($restaurantCategories as $restaurantCategory) {
@@ -305,10 +333,9 @@ class FileImportController extends Controller
 
         return response()->json(
             [
-                // 'userID'        => $userID, 
-                // 'newRestaurant' => $newRestaurant,
+                'userID'        => $userID, 
+                'newRestaurant' => $newRestaurant,
                 'message'       => 'Data imported successfully.',
-                // 'restaurantCategories' => $restaurantCategories,
                 'jsonContent'   => $jsonContent
             ]
         );

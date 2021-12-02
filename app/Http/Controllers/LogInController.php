@@ -29,7 +29,7 @@ class LogInController extends Controller
             return response() -> json(
                 [
                     'statusCode'    => 400,
-                    'message'       => 'Potrebno unijeti E-mail Adresu'
+                    'message'       => 'You need to Input E-mail Address'
                 ]
                 );
         };
@@ -105,7 +105,7 @@ class LogInController extends Controller
                     'email'     => $email,
                     'passcode'  => $passcode,
                     'role'      => 'user',
-                    'status'    => 'inactive'
+                    'status'    => 'active'
                 ]
             );
         }     
@@ -119,7 +119,7 @@ class LogInController extends Controller
                     [
                         'user' => $user,
                         'statusCode' => 200,
-                        'message' => 'Verification code has been send. Please check your e-mail.'
+                        'message' => 'Verification code has been sent. Please check your e-mail.'
                     ]
                 );
             } else {
